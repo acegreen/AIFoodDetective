@@ -35,7 +35,7 @@ struct ScanLogView: View {
 
                 listSection
             }
-            .navigationTitle("Dashboard")
+            .navigationTitle("Scan Log")
             .background(
                 Group {
                     NavigationLink(destination: scanHistoryDestination) {

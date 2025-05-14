@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import NutritionScore
+@testable import JunkFoodMeter
 
 struct NutritionScoreTests {
 

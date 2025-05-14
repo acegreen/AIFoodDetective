@@ -1,4 +1,4 @@
-# NutritionScore App
+# JunkFoodMeter App
 
 ## Steps to run the app
 2) build & run app 

@@ -1,6 +1,6 @@
 //
 //  ScoreGradeView.swift
-//  NutritionScore
+//  JunkFoodMeter
 //
 //  Created by AceGreen on 2025-02-15.
 //
