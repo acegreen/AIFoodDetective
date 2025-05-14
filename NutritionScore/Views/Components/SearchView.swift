@@ -60,10 +60,13 @@ struct SearchView: View {
             }
         }
         .sheet(isPresented: $showingScanView) {
-            ScanView { scannedCode in
+            ScanView(
+                selectedTab: .constant(0),
+                scannedCode: $searchText
+            ) { scannedCode in
                 Task {
                     searchMethod = .scan
-                    searchText = scannedCode
+                    self.searchText = scannedCode
                     await performSearch(scannedCode)
                 }
             }

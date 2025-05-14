@@ -6,27 +6,24 @@ struct MainTabView: View {
     @Environment(MessageHandler.self) var messageHandler
     @Environment(ProductListManager.self) var productListManager
     @Environment(NetworkService.self) var networkService
-    @State private var searchText: String = ""
+    @State private var scannedCode: String = ""
     @State private var selectedTab: Int = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            DashboardView(searchText: $searchText)
-                .tabItem {
-                    Image(systemName: "list.bullet.clipboard.fill")
-                    Text("Dashboard")
-                }
-                .tag(0)
-
-            ScanView { scannedCode in
-                searchText = scannedCode
-                selectedTab = 0
-            }
+            ScanView(selectedTab: $selectedTab, scannedCode: $scannedCode)
             .tabItem {
                 Image(systemName: "barcode.viewfinder")
                 Text("Scan")
             }
-            .tag(1)
+            .tag(0)
+
+            ScanLogView(scannedCode: $scannedCode)
+                .tabItem {
+                    Image(systemName: "list.bullet.clipboard.fill")
+                    Text("Scans")
+                }
+                .tag(1)
 
             ProfileView()
                 .tabItem {

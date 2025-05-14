@@ -5,7 +5,7 @@ import AVFoundation
 struct BarcodeScannerView: UIViewControllerRepresentable {
     // @ObserveInjection var inject
     @Binding var isScanning: Bool
-    @Binding var scannedCode: String?
+    @Binding var scannedCode: String
 
     func makeUIViewController(context: Context) -> ScannerViewController {
         let viewController = ScannerViewController()
@@ -45,9 +45,7 @@ class ScannerViewController: UIViewController {
 
     var isScanning: Bool = true {
         didSet {
-            print("🔄 Scanning state changed to: \(isScanning)")
             guard oldValue != isScanning else { return }
-
             if isScanning {
                 startScanning()
             } else {
@@ -70,21 +68,49 @@ class ScannerViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("👀 View did appear")
         if !hasInitializedCamera {
-            hasInitializedCamera = true
-            isScanning = true
+            checkCameraPermissions()
+        } else {
+            isScanning = true 
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("👋 View will disappear")
-        stopScanning()
+        isScanning = false 
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        previewLayer.frame = view.bounds // Updated to use view.bounds
+        previewLayer.frame = view.bounds
+        setupOverlay()
+        updateScanRect()
+    }
+    
+    private func startScanning() {
+        guard !captureSession.isRunning else { return }
+        print("▶️ Starting scanning session")
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.captureSession.startRunning()
+            DispatchQueue.main.async {
+                print("✅ Scanning session started")
+            }
+        }
+    }
+
+    private func stopScanning() {
+        guard captureSession.isRunning else {
+            print("⚠️ Scanner already stopped")
+            return
+        }
+        print("⏹️ Stopping scanning session")
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.captureSession.stopRunning()
+            DispatchQueue.main.async {
+                print("✅ Scanning session stopped")
+            }
+        }
     }
 
     private func checkCameraPermissions() {
@@ -111,6 +137,8 @@ class ScannerViewController: UIViewController {
     }
 
     private func setupCamera() {
+        guard !hasInitializedCamera else { return }
+        hasInitializedCamera = true
         print("🎥 Setting up camera...")
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else {
             print("❌ No video capture device found")
@@ -140,21 +168,6 @@ class ScannerViewController: UIViewController {
                 metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
                 metadataOutput.metadataObjectTypes = [.ean8, .ean13]
 
-                // Configure the scanning area to match the overlay
-                DispatchQueue.main.async { [self] in
-                    let scanRect = self.previewLayer.metadataOutputRectConverted(
-                        fromLayerRect: CGRect(
-                            x: self.view.bounds.width * 0.1,
-                            y: self.view.bounds.height * 0.3,
-                            width: self.view.bounds.width * 0.8,
-                            height: self.view.bounds.height * 0.4
-                        )
-                    )
-                    metadataOutput.rectOfInterest = scanRect
-                    setupOverlay()
-                    print("📐 Scan rect set to: \(scanRect)")
-                }
-
                 print("✅ Metadata delegate and types configured")
             } else {
                 print("❌ Could not add metadata output")
@@ -168,56 +181,20 @@ class ScannerViewController: UIViewController {
         }
     }
 
-    private func startScanning() {
-        guard !captureSession.isRunning && !isStartingScanning else {
-            print("⚠️ Scanning already in progress")
-            return
-        }
-
-        isStartingScanning = true
-        print("▶️ Starting scanning session")
-
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.captureSession.startRunning()
-            DispatchQueue.main.async {
-                self?.isStartingScanning = false
-                print("✅ Scanning session started")
-            }
-        }
-    }
-
-    private func stopScanning() {
-        guard captureSession.isRunning else {
-            print("⚠️ Scanner already stopped")
-            return
-        }
-        print("⏹️ Stopping scanning session")
-
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.captureSession.stopRunning()
-            DispatchQueue.main.async {
-                self?.isStartingScanning = false
-            }
-        }
-    }
-
     private func setupOverlay() {
         // Get the camera preview frame
         let previewFrame = previewLayer.frame
         
-        // Calculate frame dimensions
-        let frameWidth = previewFrame.width * 0.8
-        let frameHeight = previewFrame.height * 0.7
+        let overlayHeight = previewFrame.height / 3
+        let overlayWidth = previewFrame.width * 0.8
 
-        // Create the frame first
+        let verticalOffset: CGFloat = 140
+
         scannerOverlay.frame = CGRect(
-            origin: .zero,
-            size: CGSize(width: frameWidth, height: frameHeight)
-        )
-        // Position it within the preview area
-        scannerOverlay.center = CGPoint(
-            x: previewFrame.midX,
-            y: previewFrame.midY
+            x: (previewFrame.width - overlayWidth) / 2,
+            y: (previewFrame.height - overlayHeight) / 2 - verticalOffset,
+            width: overlayWidth,
+            height: overlayHeight
         )
         
         // Ensure overlay is added to view
@@ -240,8 +217,8 @@ class ScannerViewController: UIViewController {
             let lineInset: CGFloat = 30
             scanLine.frame = CGRect(
                 x: lineInset,
-                y: frameHeight / 2,
-                width: frameWidth - (lineInset * 2),
+                y: overlayHeight / 2,
+                width: overlayWidth - (lineInset * 2),
                 height: 2
             )
             scannerOverlay.addSubview(scanLine)
@@ -254,10 +231,26 @@ class ScannerViewController: UIViewController {
         }
     }
 
+    private func updateScanRect() {
+        guard let metadataOutput = captureSession.outputs.first as? AVCaptureMetadataOutput else { return }
+        
+        let scanRect = previewLayer.metadataOutputRectConverted(
+            fromLayerRect: CGRect(
+                x: view.bounds.width * 0.1,
+                y: view.bounds.height * 0.3,
+                width: view.bounds.width * 0.8,
+                height: view.bounds.height * 0.4
+            )
+        )
+        metadataOutput.rectOfInterest = scanRect
+        print("📐 Scan rect set to: \(scanRect)")
+    }
+
     private func createCorner(position: CornerPosition) -> UIView {
         let corner = UIView()
         let size: CGFloat = 40
         let thickness: CGFloat = 3
+        let scanAreaHeight = scannerOverlay.bounds.height
 
         corner.frame = CGRect(x: 0, y: 0, width: size, height: size)
         corner.backgroundColor = .clear

@@ -23,7 +23,7 @@ class ProductList: Identifiable, Codable, Equatable {
     let id: UUID
     var name: ProductListName
     var products: [Product]  // No longer needs @Published
-    
+
     enum CodingKeys: CodingKey {
         case id
         case name

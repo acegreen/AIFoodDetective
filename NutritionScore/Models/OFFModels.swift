@@ -111,6 +111,16 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(_id) // Hash based on unique identifier
     }
+
+    /// Placeholder logic for demo purposes
+    var junkScore: Double {
+        // TODO: Replace with real logic
+        // Example: high sugar and high starch = high junk score
+        let sugar = nutriments.sugars ?? 0
+        let starch = nutriments.carbohydrates ?? 0
+        let score = min(1.0, (sugar + starch) / 100.0)
+        return score
+    }
 }
 
 // MARK: - ProductIngredient

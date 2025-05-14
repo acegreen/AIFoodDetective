@@ -2,11 +2,11 @@ import SwiftUI
 //import Inject
 import Observation
 
-struct DashboardView: View {
+struct ScanLogView: View {
     //    @ObserveInjection var inject
     @Environment(MessageHandler.self) var messageHandler
     @Environment(ProductListManager.self) var productListManager
-    @Binding var searchText: String
+    @Binding var scannedCode: String
     @State private var navigateToScanHistory = false
     @State private var navigateToAllViewed = false
     @State private var showingCreateList: Bool = false
@@ -18,7 +18,7 @@ struct DashboardView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 SearchView(
-                    searchText: $searchText,
+                    searchText: $scannedCode,
                     onProductFound: { product, method in
                         productListManager.selectedProduct = product
                         let listType: ProductListName = method == .scan ? .scanHistory : .allViewedProducts
@@ -49,8 +49,6 @@ struct DashboardView: View {
                     .isDetailLink(false)
                 }
             )
-            .overlay(MessageView())
-            .environment(messageHandler)
             .sheet(isPresented: $showingEditAlert) {
                 if let list = productListManager.selectedList {
                     CreateListView(
@@ -76,11 +74,18 @@ struct DashboardView: View {
                     messageHandler.show("Created list '\(listName)'")
                 }
             }
+            .onChange(of: scannedCode) { newValue in
+                if !newValue.isEmpty {
+                    showingPreview = true
+                }
+            }
             .popup(isPresented: $showingPreview) {
                 if let product = productListManager.selectedProduct {
                     ProductPreviewCard(isPresented: $showingPreview, product: product)
                 }
             }
+            .overlay(MessageView())
+            .environment(messageHandler)
             .alert("Delete List", isPresented: $showingDeleteAlert) {
                 if let list = productListManager.selectedList {
                     Button("Delete", role: .destructive) {
@@ -232,7 +237,7 @@ struct DashboardView: View {
 }
 
 #Preview {
-    DashboardView(searchText: .constant(""))
+    ScanLogView(scannedCode: .constant(""))
         .environment(MessageHandler.shared)
 }
 

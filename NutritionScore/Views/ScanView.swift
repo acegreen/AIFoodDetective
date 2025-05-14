@@ -6,94 +6,65 @@ struct ScanView: View {
     //    @ObserveInjection var inject
     @Environment(\.dismiss) private var dismiss
     @State private var isScanning = false
-    @State private var scannedCode: String?
+    @Binding var selectedTab: Int
+    @Binding var scannedCode: String
     @State private var showAlert = false
     @State private var showManualEntry = false
     @State private var cameraPermission: AVAuthorizationStatus = .notDetermined
-
-    let onScan: (String) -> Void
+    var onScan: ((String) -> Void)? = nil
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                if cameraPermission == .authorized {
-                    // Scanner area - exactly 40% of screen height
-                    ZStack {
-                        BarcodeScannerView(
-                            isScanning: $isScanning,
-                            scannedCode: $scannedCode
-                        )
+        ZStack {
+            // Barcode scanner takes the whole screen
+            BarcodeScannerView(
+                isScanning: $isScanning,
+                scannedCode: $scannedCode
+            )
+            .ignoresSafeArea()
+
+            // Overlay: Informational area
+            VStack(spacing: 24) {
+                Spacer()
+                VStack(spacing: 16) {
+                    Text("Scan a Barcode")
+                        .font(.title)
+                        .fontWeight(.semibold)
+
+                    Text("Position the barcode within the frame above")
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    Button("Enter Barcode Manually") {
+                        showManualEntry = true
                     }
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: geometry.size.height * 0.4
-                    )
-                    .ignoresSafeArea(.all, edges: .top)
-                    
-                    // Informational area - exactly 60% of screen height
-                    VStack(spacing: 24) {
-                        Text("Scan a Barcode")
-                            .font(.title)
-                            .fontWeight(.semibold)
-                        
-                        Text("Position the barcode within the frame above")
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        Button("Enter Barcode Manually") {
-                            showManualEntry = true
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.green)
-                        
-                        Spacer()
-                    }
-                    .padding(48)
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: geometry.size.height * 0.6
-                    )
-                    .background(Color(uiColor: .systemBackground))
-                } else {
-                    CameraPermissionView(status: cameraPermission)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.green)
                 }
-            }
-        }
-        .ignoresSafeArea(.keyboard)
-        .task {
-            cameraPermission = AVCaptureDevice.authorizationStatus(for: .video)
-            if cameraPermission == .notDetermined {
-                let status = await AVCaptureDevice.requestAccess(for: .video)
-                cameraPermission = status ? .authorized : .denied
-            }
-            if cameraPermission == .authorized {
-                isScanning = true
+                .padding(32)
+                .frame(maxWidth: .infinity)
+                .background(.ultraThinMaterial)
+                .cornerRadius(20)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 48)
             }
         }
         .onAppear {
-            // Reset state when view appears
-            scannedCode = nil
-            if cameraPermission == .authorized {
-                isScanning = false  // First set to false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    isScanning = true   // Then set to true to trigger refresh
-                }
+            if !scannedCode.isEmpty {
+                scannedCode = ""
             }
         }
-        .onChange(of: cameraPermission) { newValue in
-            if newValue == .authorized {
-                isScanning = true
+        .onChange(of: scannedCode) { newValue in
+            if !newValue.isEmpty {
+                selectedTab = 1
+                onScan?(newValue)
+                dismiss()
             }
         }
         .sheet(isPresented: $showManualEntry) {
             ManualBarcodeEntryView { code in
-                onScan(code)
-                dismiss()
-            }
-        }
-        .onChange(of: scannedCode) { newValue in
-            if let code = newValue {
-                onScan(code)
+                scannedCode = code
+                selectedTab = 1
+                onScan?(code)
                 dismiss()
             }
         }
@@ -128,5 +99,5 @@ struct CameraPermissionView: View {
 }
 
 #Preview {
-    ScanView(onScan: { _ in })
+    ScanView(selectedTab: .constant(0), scannedCode: .constant(""), onScan: { _ in })
 }
