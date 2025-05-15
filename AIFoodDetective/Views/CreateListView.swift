@@ -34,5 +34,6 @@ struct CreateListView: View {
                 }
             }
         }
+        .presentationDetents([.medium])
     }
 }

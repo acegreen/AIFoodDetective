@@ -13,7 +13,7 @@ struct MainTabView: View {
         TabView(selection: $selectedTab) {
             ScanView(selectedTab: $selectedTab, scannedCode: $scannedCode)
             .tabItem {
-                Image(systemName: "barcode.viewfinder")
+                Image(systemName: "camera.viewfinder")
                 Text("Scan")
             }
             .tag(0)

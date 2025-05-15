@@ -4,6 +4,7 @@ import Observation
 enum ProductListName: Codable, Equatable {
     case scanHistory
     case allViewedProducts
+    case submitted
     case custom(String)  // Custom case now takes a String associated value
 
     var rawValue: String {
@@ -12,6 +13,8 @@ enum ProductListName: Codable, Equatable {
             return "Scan History"
         case .allViewedProducts:
             return "All Viewed Products"
+        case .submitted:
+            return "Submitted"
         case .custom(let name):
             return name  // Return the associated value
         }

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProductDetailsView: View {
-    @Environment(ProductListManager.self) var productListManager
     @Environment(MessageHandler.self) var messageHandler
     let product: Product
     @State private var showingListPicker = false
@@ -24,6 +23,8 @@ struct ProductDetailsView: View {
                 
                 // Contained Ingredients Section
                 ContainedIngredientsView(ingredients: product.ingredients ?? [])
+
+                AIAnalysisView(aiResult: product.ingredientsText ?? "")
             }
             .padding()
         }
@@ -31,20 +32,21 @@ struct ProductDetailsView: View {
         .navigationTitle("Food Details")
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationTitle()
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showingListPicker = true
-                } label: {
-                    Image(systemName: "plus")
-                        .foregroundColor(.white)
-                }
-            }
-        }
         .sheet(isPresented: $showingListPicker) {
             ListPickerView(isPresented: $showingListPicker, product: product)
         }
         .toast()
+        .navigationBarItems(trailing: plusButton)
+    }
+
+    private var plusButton: some View {
+        Button {
+            showingListPicker = true
+        } label: {
+            Image(systemName: "plus")
+                .font(.title2)
+                .foregroundColor(.white)
+        }
     }
 }
 

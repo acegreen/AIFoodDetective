@@ -48,7 +48,7 @@ struct ProfileView: View {
 
                     // Activity Stats
                     HStack(spacing: 32) {
-                        ProfileStatView(title: "SCANS", value: "3", icon: "viewfinder.circle", iconColor: .white)
+                        ProfileStatView(title: "SCANS", value: "3", icon: "plus.viewfinder", iconColor: .white)
                         ProfileStatView(title: "LIKES", value: "0", icon: "hand.thumbsup.fill", iconColor: .white)
                         ProfileStatView(title: "COMMENTS", value: "0", icon: "text.bubble.fill", iconColor: .white)
                         ProfileStatView(title: "SHARES", value: "0", icon: "square.and.arrow.up.fill", iconColor: .white)
@@ -123,9 +123,7 @@ struct ProfileView: View {
     }
 
     private var settingsButton: some View {
-        Button {
-            // Settings action
-        } label: {
+        NavigationLink(destination: SettingsView()) {
             Image(systemName: "gearshape")
                 .font(.title2)
                 .foregroundColor(.white)

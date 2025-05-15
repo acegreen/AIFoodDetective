@@ -4,6 +4,8 @@ import UIKit
 
 struct ScanView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(MessageHandler.self) var messageHandler
+    @Environment(ProductListManager.self) var productListManager
     @State private var isScanning = false
     @Binding var selectedTab: Int
     @Binding var scannedCode: String
@@ -48,6 +50,10 @@ struct ScanView: View {
                                 let product = try await NetworkService.shared.fetchProduct(barcode: code)
                                 previewProduct = product
                                 showingProductPreview = true
+                                // Add to scan history
+                                if let scanHistoryList = productListManager.systemLists.first(where: { $0.name == .scanHistory }) {
+                                    addToList(product, list: scanHistoryList)
+                                }
                             } catch {
                                 // Handle error (e.g., show an alert)
                             }
@@ -66,6 +72,12 @@ struct ScanView: View {
                             do {
                                 let result = try await AINetworkService.shared.analyzeMealImage(image)
                                 aiResult = AIResult(message: result)
+                                // Create a product from the AI result and add to viewed products
+                                let product = createProductFromAnalysis(result: result)
+                                // Add to scan history
+                                if let scanHistoryList = productListManager.systemLists.first(where: { $0.name == .scanHistory }) {
+                                    addToList(product, list: scanHistoryList)
+                                }
                             } catch {
                                 aiResult = AIResult(message: error.localizedDescription)
                             }
@@ -226,6 +238,61 @@ struct ScanView: View {
         }
         .toast()
         .aiGlowBorder(enabled: scanMode == .aiScan)
+    }
+
+    private func addToList(_ product: Product, list: ProductList) {
+        if productListManager.addToList(product, list: list) {
+            messageHandler.show("Added '\(product.productName)' to \(list.name.rawValue)")
+        }
+    }
+
+    private func createProductFromAnalysis(result: String) -> Product {
+        // Create a unique ID for the AI-analyzed meal
+        let uniqueId = "AI_\(UUID().uuidString)"
+        
+        // Save the captured image to a temporary file
+        let imageFileName = "\(uniqueId).jpg"
+        let imagePath = FileManager.default.temporaryDirectory.appendingPathComponent(imageFileName)
+        
+        do {
+            if let imageData = capturedImage?.jpegData(compressionQuality: 0.8) {
+                try imageData.write(to: imagePath)
+            }
+        } catch {
+            print("Failed to save image: \(error)")
+        }
+        
+        // Create a Product from the analysis
+        return Product(
+            _id: uniqueId,
+            productName: "AI Analyzed Meal",
+            brands: "AI Analysis",
+            nutriments: nil,
+            ingredients: nil,
+            ingredientsText: result,
+            nutriscoreGrade: nil,
+            nutriscoreScore: nil,
+            origins: nil,
+            traces: nil,
+            packaging: nil,
+            quantity: nil,
+            servingSize: nil,
+            categories: nil,
+            allergens: nil,
+            allergensFromIngredients: nil,
+            brandOwner: nil,
+            stores: nil,
+            novaGroup: nil,
+            ecoscore: nil,
+            imageFrontSmallUrl: imagePath.absoluteString,
+            imageFrontThumbUrl: imagePath.absoluteString,
+            imageFrontUrl: imagePath.absoluteString,
+            createdT: Int(Date().timeIntervalSince1970),
+            completeness: nil,
+            uniqueScansN: nil,
+            sources: nil,
+            labels: nil
+        )
     }
 }
 

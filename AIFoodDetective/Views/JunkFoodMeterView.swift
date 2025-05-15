@@ -12,24 +12,8 @@ struct JunkFoodMeterView: View {
     // @ObserveInjection var inject
     let product: Product
 
-    // Placeholder: Replace with your actual scoring logic
-    var junkScore: Double {
-        // 0 = healthy, 1 = junk
-        product.junkScore ?? 0.7
-    }
-
     var needleRotation: Double {
-        -90.0 + (180.0 * junkScore)
-    }
-
-    var junkLevel: String {
-        switch junkScore {
-        case 0.8...: return "Very High"
-        case 0.6..<0.8: return "High"
-        case 0.4..<0.6: return "Moderate"
-        case 0.2..<0.4: return "Low"
-        default: return "Very Low"
-        }
+        -90.0 + (180.0 * Double(product.score))
     }
 
     var body: some View {
@@ -55,7 +39,7 @@ struct JunkFoodMeterView: View {
                             .frame(width: 4, height: 90)
                             .offset(y: -45)
                             .rotationEffect(.degrees(needleRotation))
-                            .animation(.easeInOut, value: junkScore)
+                            .animation(.easeInOut, value: product.score)
 
                         // Center circle
                         Circle()
@@ -64,7 +48,7 @@ struct JunkFoodMeterView: View {
                             .shadow(radius: 2)
 
                         // Level indicator
-                        Text(junkLevel.uppercased())
+                        Text("\(product.score)".uppercased())
                             .font(.title3)
                             .foregroundColor(.secondary)
                             .shadow(radius: 2)

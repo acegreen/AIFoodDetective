@@ -1,13 +1,13 @@
 //
-//  NutritionScoreUITestsLaunchTests.swift
-//  NutritionScoreUITests
+//  AIFoodDetectiveUITestsLaunchTests.swift
+//  AIFoodDetectiveUITests
 //
 //  Created by AceGreen on 2025-02-14.
 //
 
 import XCTest
 
-final class NutritionScoreUITestsLaunchTests: XCTestCase {
+final class AIFoodDetectiveUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

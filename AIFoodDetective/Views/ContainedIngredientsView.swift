@@ -16,7 +16,7 @@ struct ContainedIngredientsView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Button(action: { withAnimation { isExpanded.toggle() }}) {
                     HStack {
-                        SectionHeader(title: "Contained Ingredients", systemImage: "list.bullet.clipboard")
+                        SectionHeader(title: "Contained Ingredients", systemImage: "list.bullet.clipboard.fill")
                         Spacer()
                         Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                             .foregroundColor(.secondary)

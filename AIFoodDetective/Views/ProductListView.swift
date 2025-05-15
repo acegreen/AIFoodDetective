@@ -39,31 +39,31 @@ struct ProductListView: View {
                         NavigationLink(destination: ProductDetailsView(product: product)) {
                             CardView {
                                 VStack(spacing: 8) {
-                                if let imageUrl = product.imageFrontUrl {
-                                    AsyncImage(url: URL(string: imageUrl)) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(height: 150)
-                                            .cornerRadius(8)
-                                    } placeholder: {
-                                        Rectangle()
-                                            .fill(Color.gray.opacity(0.2))
-                                            .frame(height: 150)
-                                            .cornerRadius(8)
-                                            .overlay(
-                                                ProgressView()
-                                            )
+                                    if let imageUrl = product.imageFrontUrl {
+                                        AsyncImage(url: URL(string: imageUrl)) { image in
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(height: 150)
+                                                .cornerRadius(8)
+                                        } placeholder: {
+                                            Rectangle()
+                                                .fill(Color.gray.opacity(0.2))
+                                                .frame(height: 150)
+                                                .cornerRadius(8)
+                                                .overlay(
+                                                    ProgressView()
+                                                )
+                                        }
+                                        .frame(maxWidth: .infinity)
                                     }
-                                    .frame(maxWidth: .infinity)
-                                }
 
-                                Text(product.productName)
-                                    .font(.headline)
-                                    .foregroundColor(.systemBackground)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .padding()
+                                    Text(product.productName)
+                                        .font(.headline)
+                                        .foregroundColor(.systemBackground)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .padding()
                             }
                         }
                         .contextMenu {
@@ -150,10 +150,8 @@ struct ProductListView: View {
 }
 
 #Preview {
-    NavigationStack {
-        ProductListView(list: ProductList(name: .custom("Test List")))
-            .environment(MessageHandler.shared)
-            .environment(ProductListManager.shared)
-            .environment(NetworkService.shared)  // Added because of network calls in onChange
-    }
+    ProductListView(list: ProductList(name: .custom("Test List")))
+        .environment(MessageHandler.shared)
+        .environment(ProductListManager.shared)
+        .environment(NetworkService.shared)  // Added because of network calls in onChange
 }

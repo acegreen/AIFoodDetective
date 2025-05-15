@@ -24,38 +24,76 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2373F4EE2D5F9A5700BDD520 /* JunkFoodMeter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JunkFoodMeter.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2373F5022D5F9A5800BDD520 /* JunkFoodMeterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JunkFoodMeterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2373F50C2D5F9A5800BDD520 /* JunkFoodMeterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JunkFoodMeterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2373F4EE2D5F9A5700BDD520 /* AIFoodDetective.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIFoodDetective.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2373F5022D5F9A5800BDD520 /* AIFoodDetectiveTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIFoodDetectiveTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2373F50C2D5F9A5800BDD520 /* AIFoodDetectiveUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AIFoodDetectiveUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2373F5142D5F9A5800BDD520 /* Exceptions for "JunkFoodMeter" folder in "JunkFoodMeter" target */ = {
+		2373F5142D5F9A5800BDD520 /* Exceptions for "AIFoodDetective" folder in "AIFoodDetective" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 2373F4ED2D5F9A5700BDD520 /* JunkFoodMeter */;
+			target = 2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */;
+		};
+		2394A50D2DD691AC00F97526 /* Exceptions for "AIFoodDetectiveTests" folder in "AIFoodDetective" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AIFoodDetectorTests.swift,
+			);
+			target = 2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */;
+		};
+		2394A50F2DD691AF00F97526 /* Exceptions for "AIFoodDetectiveTests" folder in "AIFoodDetectiveTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AIFoodDetectorTests.swift,
+			);
+			target = 2373F5012D5F9A5800BDD520 /* AIFoodDetectiveTests */;
+		};
+		2394A5102DD691B500F97526 /* Exceptions for "AIFoodDetectiveUITests" folder in "AIFoodDetective" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AIFoodDetectorMeterUITests.swift,
+				AIFoodDetectorUITestsLaunchTests.swift,
+			);
+			target = 2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */;
+		};
+		2394A5132DD691B800F97526 /* Exceptions for "AIFoodDetectiveUITests" folder in "AIFoodDetectiveUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AIFoodDetectorMeterUITests.swift,
+				AIFoodDetectorUITestsLaunchTests.swift,
+			);
+			target = 2373F50B2D5F9A5800BDD520 /* AIFoodDetectiveUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2373F4F02D5F9A5700BDD520 /* JunkFoodMeter */ = {
+		2373F4F02D5F9A5700BDD520 /* AIFoodDetective */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				2373F5142D5F9A5800BDD520 /* Exceptions for "JunkFoodMeter" folder in "JunkFoodMeter" target */,
+				2373F5142D5F9A5800BDD520 /* Exceptions for "AIFoodDetective" folder in "AIFoodDetective" target */,
 			);
-			path = JunkFoodMeter;
+			path = AIFoodDetective;
 			sourceTree = "<group>";
 		};
-		2373F5052D5F9A5800BDD520 /* JunkFoodMeterTests */ = {
+		2394A4A12DD6908100F97526 /* AIFoodDetectiveTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = JunkFoodMeterTests;
+			exceptions = (
+				2394A50D2DD691AC00F97526 /* Exceptions for "AIFoodDetectiveTests" folder in "AIFoodDetective" target */,
+				2394A50F2DD691AF00F97526 /* Exceptions for "AIFoodDetectiveTests" folder in "AIFoodDetectiveTests" target */,
+			);
+			path = AIFoodDetectiveTests;
 			sourceTree = "<group>";
 		};
-		2373F50F2D5F9A5800BDD520 /* JunkFoodMeterUITests */ = {
+		2394A4A42DD6908100F97526 /* AIFoodDetectiveUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = JunkFoodMeterUITests;
+			exceptions = (
+				2394A5102DD691B500F97526 /* Exceptions for "AIFoodDetectiveUITests" folder in "AIFoodDetective" target */,
+				2394A5132DD691B800F97526 /* Exceptions for "AIFoodDetectiveUITests" folder in "AIFoodDetectiveUITests" target */,
+			);
+			path = AIFoodDetectiveUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,9 +126,9 @@
 		2373F4E52D5F9A5700BDD520 = {
 			isa = PBXGroup;
 			children = (
-				2373F4F02D5F9A5700BDD520 /* JunkFoodMeter */,
-				2373F5052D5F9A5800BDD520 /* JunkFoodMeterTests */,
-				2373F50F2D5F9A5800BDD520 /* JunkFoodMeterUITests */,
+				2373F4F02D5F9A5700BDD520 /* AIFoodDetective */,
+				2394A4A12DD6908100F97526 /* AIFoodDetectiveTests */,
+				2394A4A42DD6908100F97526 /* AIFoodDetectiveUITests */,
 				2373F4EF2D5F9A5700BDD520 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -98,9 +136,9 @@
 		2373F4EF2D5F9A5700BDD520 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2373F4EE2D5F9A5700BDD520 /* JunkFoodMeter.app */,
-				2373F5022D5F9A5800BDD520 /* JunkFoodMeterTests.xctest */,
-				2373F50C2D5F9A5800BDD520 /* JunkFoodMeterUITests.xctest */,
+				2373F4EE2D5F9A5700BDD520 /* AIFoodDetective.app */,
+				2373F5022D5F9A5800BDD520 /* AIFoodDetectiveTests.xctest */,
+				2373F50C2D5F9A5800BDD520 /* AIFoodDetectiveUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,9 +146,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2373F4ED2D5F9A5700BDD520 /* JunkFoodMeter */ = {
+		2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2373F5152D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "JunkFoodMeter" */;
+			buildConfigurationList = 2373F5152D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "AIFoodDetective" */;
 			buildPhases = (
 				2373F4EA2D5F9A5700BDD520 /* Sources */,
 				2373F4EB2D5F9A5700BDD520 /* Frameworks */,
@@ -121,18 +159,20 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				2373F4F02D5F9A5700BDD520 /* JunkFoodMeter */,
+				2373F4F02D5F9A5700BDD520 /* AIFoodDetective */,
+				2394A4A12DD6908100F97526 /* AIFoodDetectiveTests */,
+				2394A4A42DD6908100F97526 /* AIFoodDetectiveUITests */,
 			);
-			name = JunkFoodMeter;
+			name = AIFoodDetective;
 			packageProductDependencies = (
 			);
 			productName = NutritionScore;
-			productReference = 2373F4EE2D5F9A5700BDD520 /* JunkFoodMeter.app */;
+			productReference = 2373F4EE2D5F9A5700BDD520 /* AIFoodDetective.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2373F5012D5F9A5800BDD520 /* JunkFoodMeterTests */ = {
+		2373F5012D5F9A5800BDD520 /* AIFoodDetectiveTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2373F51A2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "JunkFoodMeterTests" */;
+			buildConfigurationList = 2373F51A2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "AIFoodDetectiveTests" */;
 			buildPhases = (
 				2373F4FE2D5F9A5800BDD520 /* Sources */,
 				2373F4FF2D5F9A5800BDD520 /* Frameworks */,
@@ -143,19 +183,16 @@
 			dependencies = (
 				2373F5042D5F9A5800BDD520 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				2373F5052D5F9A5800BDD520 /* JunkFoodMeterTests */,
-			);
-			name = JunkFoodMeterTests;
+			name = AIFoodDetectiveTests;
 			packageProductDependencies = (
 			);
 			productName = NutritionScoreTests;
-			productReference = 2373F5022D5F9A5800BDD520 /* JunkFoodMeterTests.xctest */;
+			productReference = 2373F5022D5F9A5800BDD520 /* AIFoodDetectiveTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		2373F50B2D5F9A5800BDD520 /* JunkFoodMeterUITests */ = {
+		2373F50B2D5F9A5800BDD520 /* AIFoodDetectiveUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2373F51D2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "JunkFoodMeterUITests" */;
+			buildConfigurationList = 2373F51D2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "AIFoodDetectiveUITests" */;
 			buildPhases = (
 				2373F5082D5F9A5800BDD520 /* Sources */,
 				2373F5092D5F9A5800BDD520 /* Frameworks */,
@@ -166,14 +203,11 @@
 			dependencies = (
 				2373F50E2D5F9A5800BDD520 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				2373F50F2D5F9A5800BDD520 /* JunkFoodMeterUITests */,
-			);
-			name = JunkFoodMeterUITests;
+			name = AIFoodDetectiveUITests;
 			packageProductDependencies = (
 			);
 			productName = NutritionScoreUITests;
-			productReference = 2373F50C2D5F9A5800BDD520 /* JunkFoodMeterUITests.xctest */;
+			productReference = 2373F50C2D5F9A5800BDD520 /* AIFoodDetectiveUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -199,7 +233,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2373F4E92D5F9A5700BDD520 /* Build configuration list for PBXProject "JunkFoodMeter" */;
+			buildConfigurationList = 2373F4E92D5F9A5700BDD520 /* Build configuration list for PBXProject "AIFoodDetective" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -213,9 +247,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2373F4ED2D5F9A5700BDD520 /* JunkFoodMeter */,
-				2373F5012D5F9A5800BDD520 /* JunkFoodMeterTests */,
-				2373F50B2D5F9A5800BDD520 /* JunkFoodMeterUITests */,
+				2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */,
+				2373F5012D5F9A5800BDD520 /* AIFoodDetectiveTests */,
+				2373F50B2D5F9A5800BDD520 /* AIFoodDetectiveUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -271,12 +305,12 @@
 /* Begin PBXTargetDependency section */
 		2373F5042D5F9A5800BDD520 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2373F4ED2D5F9A5700BDD520 /* JunkFoodMeter */;
+			target = 2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */;
 			targetProxy = 2373F5032D5F9A5800BDD520 /* PBXContainerItemProxy */;
 		};
 		2373F50E2D5F9A5800BDD520 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2373F4ED2D5F9A5700BDD520 /* JunkFoodMeter */;
+			target = 2373F4ED2D5F9A5700BDD520 /* AIFoodDetective */;
 			targetProxy = 2373F50D2D5F9A5800BDD520 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -287,15 +321,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = JunkFoodMeter/JunkFoodMeter.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AIFoodDetective/AIFoodDetective.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"JunkFoodMeter/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"AIFoodDetective/Preview Content\"";
 				DEVELOPMENT_TEAM = 8T3W9YR268;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = JunkFoodMeter/Info.plist;
+				INFOPLIST_FILE = AIFoodDetective/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -307,7 +341,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.greenace.JunkFoodMeter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.greenace.AIFoodDetective;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -321,15 +355,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = JunkFoodMeter/JunkFoodMeter.entitlements;
+				CODE_SIGN_ENTITLEMENTS = AIFoodDetective/AIFoodDetective.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"JunkFoodMeter/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"AIFoodDetective/Preview Content\"";
 				DEVELOPMENT_TEAM = 8T3W9YR268;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = JunkFoodMeter/Info.plist;
+				INFOPLIST_FILE = AIFoodDetective/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -341,7 +375,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.greenace.JunkFoodMeter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.greenace.AIFoodDetective;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -484,7 +518,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JunkFoodMeter.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JunkFoodMeter";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AIFoodDetective.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AIFoodDetective";
 			};
 			name = Debug;
 		};
@@ -503,7 +537,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JunkFoodMeter.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JunkFoodMeter";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AIFoodDetective.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AIFoodDetective";
 			};
 			name = Release;
 		};
@@ -544,7 +578,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2373F4E92D5F9A5700BDD520 /* Build configuration list for PBXProject "JunkFoodMeter" */ = {
+		2373F4E92D5F9A5700BDD520 /* Build configuration list for PBXProject "AIFoodDetective" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2373F5182D5F9A5800BDD520 /* Debug */,
@@ -553,7 +587,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2373F5152D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "JunkFoodMeter" */ = {
+		2373F5152D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "AIFoodDetective" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2373F5162D5F9A5800BDD520 /* Debug */,
@@ -562,7 +596,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2373F51A2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "JunkFoodMeterTests" */ = {
+		2373F51A2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "AIFoodDetectiveTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2373F51B2D5F9A5800BDD520 /* Debug */,
@@ -571,7 +605,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2373F51D2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "JunkFoodMeterUITests" */ = {
+		2373F51D2D5F9A5800BDD520 /* Build configuration list for PBXNativeTarget "AIFoodDetectiveUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2373F51E2D5F9A5800BDD520 /* Debug */,

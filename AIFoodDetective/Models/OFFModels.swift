@@ -4,6 +4,7 @@
 //   let welcome = try? JSONDecoder().decode(Welcome.self, from: jsonData)
 
 import Foundation
+import SwiftUI
 
 // MARK: - Welcome
 struct Welcome: Codable {
@@ -26,7 +27,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
     let _id: String
     let productName: String
     let brands: String
-    let nutriments: Nutriments
+    let nutriments: Nutriments?
     let ingredients: [ProductIngredient]?
     let ingredientsText: String?
     let nutriscoreGrade: String?
@@ -116,10 +117,66 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
     var junkScore: Double {
         // TODO: Replace with real logic
         // Example: high sugar and high starch = high junk score
-        let sugar = nutriments.sugars ?? 0
-        let starch = nutriments.carbohydrates ?? 0
+        let sugar = nutriments?.sugars ?? 0
+        let starch = nutriments?.carbohydrates ?? 0
         let score = min(1.0, (sugar + starch) / 100.0)
         return score
+    }
+
+    static var placeholder: Product {
+        Product(
+            _id: "1",
+            productName: "The Soap Works Pure Glycerine Soap",
+            brands: "The Soap Works",
+            nutriments: nil,
+            ingredients: nil,
+            ingredientsText: nil,
+            nutriscoreGrade: "a",
+            nutriscoreScore: 2,
+            origins: nil,
+            traces: nil,
+            packaging: nil,
+            quantity: nil,
+            servingSize: nil,
+            categories: nil,
+            allergens: nil,
+            allergensFromIngredients: nil,
+            brandOwner: nil,
+            stores: nil,
+            novaGroup: nil,
+            ecoscore: nil,
+            imageFrontSmallUrl: nil,
+            imageFrontThumbUrl: nil,
+            imageFrontUrl: nil,
+            createdT: nil,
+            completeness: nil,
+            uniqueScansN: nil,
+            sources: nil,
+            labels: nil
+        )
+    }
+
+    static var placeholderList: [Product] {
+        [Product.placeholder, Product.placeholder, Product.placeholder]
+    }
+}
+
+extension Product {
+    /// Returns the NutriScore as an Int, or 0 if unavailable
+    var score: Int {
+        Int(nutriscoreScore ?? 0)
+    }
+
+    /// Returns a color based on the NutriScore grade (A=green, E=red, etc)
+    var scoreColor: Color {
+        switch nutriscoreGrade?.lowercased() {
+        case "a": return .green
+        case "b": return .yellow
+        case "c": return .orange
+        case "d": return .red
+        case "e": return .purple
+        default: return .gray
+        }
     }
 }
 

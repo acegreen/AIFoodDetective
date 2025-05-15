@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  JunkFoodMeter
+//  AIFoodDetective
 //
 //  Created by AceGreen on 2025-02-14.
 //
