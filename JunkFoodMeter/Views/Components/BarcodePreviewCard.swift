@@ -1,7 +1,7 @@
 import SwiftUI
 import Observation
 
-struct ProductPreviewCard: View {
+struct BarcodePreviewCard: View {
     @Binding var isPresented: Bool
     let product: Product
     @State private var showingListPicker = false
@@ -106,7 +106,7 @@ struct ProductPreviewCard: View {
     let url = Bundle.main.url(forResource: "sampleProduct", withExtension: "json")!
     let data = try! Data(contentsOf: url)
     let welcome = try! JSONDecoder().decode(Welcome.self, from: data)
-    return ProductPreviewCard(isPresented: .constant(true), product: welcome.product)
+    return BarcodePreviewCard(isPresented: .constant(true), product: welcome.product)
         .environment(ProductListManager.shared)
         .environment(MessageHandler.shared)
 } 

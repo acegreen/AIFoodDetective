@@ -1,11 +1,13 @@
 import SwiftUI
 import AVFoundation
+import UIKit
 // import Inject
 
 struct BarcodeScannerView: UIViewControllerRepresentable {
     // @ObserveInjection var inject
     @Binding var isScanning: Bool
     @Binding var scannedCode: String
+    var onScan: ((String) -> Void)? = nil
 
     func makeUIViewController(context: Context) -> ScannerViewController {
         let viewController = ScannerViewController()
@@ -30,6 +32,7 @@ struct BarcodeScannerView: UIViewControllerRepresentable {
 
         func didFind(code: String) {
             parent.scannedCode = code
+            parent.onScan?(code)
         }
     }
 }
@@ -70,15 +73,18 @@ class ScannerViewController: UIViewController {
         super.viewDidAppear(animated)
         if !hasInitializedCamera {
             checkCameraPermissions()
-        } else {
-            isScanning = true 
+        } else if !captureSession.isRunning {
+            startScanning()
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        isScanning = false 
+        if captureSession.isRunning {
+            stopScanning()
+        }
     }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer.frame = view.bounds
@@ -233,7 +239,6 @@ class ScannerViewController: UIViewController {
 
     private func updateScanRect() {
         guard let metadataOutput = captureSession.outputs.first as? AVCaptureMetadataOutput else { return }
-        
         let scanRect = previewLayer.metadataOutputRectConverted(
             fromLayerRect: CGRect(
                 x: view.bounds.width * 0.1,
@@ -242,6 +247,10 @@ class ScannerViewController: UIViewController {
                 height: view.bounds.height * 0.4
             )
         )
+        guard scanRect.width > 0 && scanRect.height > 0 else {
+            print("⚠️ Invalid scan rect dimensions: \(scanRect)")
+            return
+        }
         metadataOutput.rectOfInterest = scanRect
         print("📐 Scan rect set to: \(scanRect)")
     }

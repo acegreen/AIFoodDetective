@@ -10,7 +10,6 @@ struct ScanLogView: View {
     @State private var navigateToScanHistory = false
     @State private var navigateToAllViewed = false
     @State private var showingCreateList: Bool = false
-    @State private var showingPreview = false
     @State private var showingDeleteAlert = false
     @State private var showingEditAlert = false
 
@@ -24,8 +23,13 @@ struct ScanLogView: View {
                         let listType: ProductListName = method == .scan ? .scanHistory : .allViewedProducts
                         if let list = productListManager.systemLists.first(where: { $0.name == listType }) {
                             if productListManager.addToList(product, list: list) {
-                                withAnimation {
-                                    showingPreview = true
+                                switch list.name {
+                                case .scanHistory:
+                                    navigateToScanHistory = true
+                                case .allViewedProducts:
+                                    navigateToAllViewed = true
+                                default:
+                                    break
                                 }
                             }
                         }
@@ -79,12 +83,15 @@ struct ScanLogView: View {
             }
             .onChange(of: scannedCode) { newValue in
                 if !newValue.isEmpty {
-                    showingPreview = true
-                }
-            }
-            .popup(isPresented: $showingPreview) {
-                if let product = productListManager.selectedProduct {
-                    ProductPreviewCard(isPresented: $showingPreview, product: product)
+                    // Handle navigation based on list type
+                    switch productListManager.selectedList?.name {
+                    case .scanHistory:
+                        navigateToScanHistory = true
+                    case .allViewedProducts:
+                        navigateToAllViewed = true
+                    default:
+                        break
+                    }
                 }
             }
             .overlay(MessageView())
@@ -173,13 +180,11 @@ struct ScanLogView: View {
                         .tint(.blue)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        withAnimation(nil) {
-                            Button(role: .destructive) {
-                                productListManager.selectedList = list
-                                showingDeleteAlert = true
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
+                        Button(role: .destructive) {
+                            productListManager.selectedList = list
+                            showingDeleteAlert = true
+                        } label: {
+                            Label("Delete", systemImage: "trash")
                         }
                     }
                 }

@@ -46,20 +46,12 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal)
 
-                    // Stats Row
-                    HStack(spacing: 32) {
-                        ProfileStatView(title: "LIKES", value: "1")
-                        ProfileStatView(title: "LISTS", value: "3")
-                        ProfileStatView(title: "ING. PREF.", value: "0")
-                    }
-                    .padding(.horizontal)
-
                     // Activity Stats
                     HStack(spacing: 32) {
-                        ProfileStatView(title: "YOUR VIEWS", value: "3")
-                        ProfileStatView(title: "YOUR BADGES", value: "0", icon: "star.fill", iconColor: .white)
-                        ProfileStatView(title: "YOUR REVIEWS", value: "0", icon: "text.bubble.fill", iconColor: .white)
-                        ProfileStatView(title: "REVIEW LIKES", value: "0", icon: "hand.thumbsup.fill", iconColor: .white)
+                        ProfileStatView(title: "SCANS", value: "3", icon: "viewfinder.circle", iconColor: .white)
+                        ProfileStatView(title: "LIKES", value: "0", icon: "hand.thumbsup.fill", iconColor: .white)
+                        ProfileStatView(title: "COMMENTS", value: "0", icon: "text.bubble.fill", iconColor: .white)
+                        ProfileStatView(title: "SHARES", value: "0", icon: "square.and.arrow.up.fill", iconColor: .white)
                     }
                     .padding(.horizontal)
 
@@ -86,7 +78,7 @@ struct ProfileView: View {
                                         .border(.white)
                                         .background(selectedActivity == type ? Color.white.opacity(0.3): Color.clear)
                                         .foregroundColor(.white)
-                                        .cornerRadius(8)
+                                        .cornerRadius(4)
                                 }
                             }
                         }

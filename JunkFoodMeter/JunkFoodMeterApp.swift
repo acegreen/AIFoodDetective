@@ -25,7 +25,7 @@ extension View {
 }
 
 @main
-struct NutritionScoreApp: App {
+struct JunkFoodMeterApp: App {
     @State private var productListManager = ProductListManager.shared
     @State private var messageHandler = MessageHandler.shared
     @State private var networkService = NetworkService.shared

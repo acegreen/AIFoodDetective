@@ -35,6 +35,11 @@ class NetworkService {
 
         let (data, _) = try await URLSession.shared.data(from: url)
         let response = try JSONDecoder().decode(Welcome.self, from: data)
+        if let jsonString = String(data: data, encoding: .utf8) {
+            #if DEBUG
+            await APIResponseLogger.shared.saveResponse(jsonString, prefix: "product_lookup")
+            #endif
+        }
 
         // print("Raw JSON response: \(String(data: data, encoding: .utf8) ?? "No data")")
         // Check if the product was found
