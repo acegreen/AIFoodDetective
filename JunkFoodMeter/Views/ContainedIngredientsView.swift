@@ -19,6 +19,7 @@ struct ContainedIngredientsView: View {
                         SectionHeader(title: "Contained Ingredients", systemImage: "list.bullet.clipboard")
                         Spacer()
                         Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                            .foregroundColor(.secondary)
                     }
                 }
                 

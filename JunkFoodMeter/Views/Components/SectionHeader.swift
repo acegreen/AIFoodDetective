@@ -7,10 +7,11 @@ struct SectionHeader: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: systemImage)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.primary)
             Text(title)
                 .font(.title3)
-                .fontWeight(.bold)
+                .bold()
+                .foregroundColor(.primary)
         }
     }
 }

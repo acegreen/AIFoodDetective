@@ -19,9 +19,6 @@ struct ProductDetailsView: View {
                 // Product Info Section
                 ProductBasicInfoView(product: product)
                 
-                // Junk Food Meter Section
-                JunkFoodMeterView(product: product)
-                
                 // Junk Food Breakdown Section
                 JunkFoodBreakdownView(product: product)
                 
@@ -30,13 +27,17 @@ struct ProductDetailsView: View {
             }
             .padding()
         }
-        .navigationTitle("Junk Food Meter")
+        .background(Color.systemBackground)
+        .navigationTitle("Food Details")
+        .navigationBarTitleDisplayMode(.inline)
+        .whiteNavigationTitle()
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showingListPicker = true
                 } label: {
                     Image(systemName: "plus")
+                        .foregroundColor(.white)
                 }
             }
         }

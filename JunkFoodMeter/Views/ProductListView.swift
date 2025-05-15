@@ -19,48 +19,77 @@ struct ProductListView: View {
         case barcode = "Barcode"
     }
 
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+
     var body: some View {
-        List {
+        ScrollView {
             let sortedProducts = productListManager.sortedProducts(from: list, by: sortOption)
 
             if sortedProducts.isEmpty {
                 Text("No products yet")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.systemBackground)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
             } else {
-                ForEach(sortedProducts) { product in
-                    NavigationLink(destination: ProductDetailsView(product: product)) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(product.productName)
-                                .font(.headline)
-                            Text(product._id)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(sortedProducts) { product in
+                        NavigationLink(destination: ProductDetailsView(product: product)) {
+                            CardView {
+                                VStack(spacing: 8) {
+                                if let imageUrl = product.imageFrontUrl {
+                                    AsyncImage(url: URL(string: imageUrl)) { image in
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(height: 150)
+                                            .cornerRadius(8)
+                                    } placeholder: {
+                                        Rectangle()
+                                            .fill(Color.gray.opacity(0.2))
+                                            .frame(height: 150)
+                                            .cornerRadius(8)
+                                            .overlay(
+                                                ProgressView()
+                                            )
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                }
+
+                                Text(product.productName)
+                                    .font(.headline)
+                                    .foregroundColor(.systemBackground)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding()
+                            }
                         }
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        // Delete action
-                        Button(role: .destructive) {
-                            selectedProduct = product
-                            showingAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+                        .contextMenu {
+                            Button {
+                                selectedProduct = product
+                                showingListPicker = true
+                            } label: {
+                                Label("Add to List", systemImage: "plus")
+                            }
+
+                            Button(role: .destructive) {
+                                selectedProduct = product
+                                showingAlert = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
                         }
-                    }
-                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                        // Add to custom list action
-                        Button {
-                            selectedProduct = product
-                            showingListPicker = true
-                        } label: {
-                            Label("Add to List", systemImage: "plus")
-                        }
-                        .tint(.blue) // Customize the button color if needed
                     }
                 }
+                .padding()
             }
         }
+        .background(Color.systemBackground)
         .navigationTitle(list.name.rawValue)
-        .navigationBarItems(trailing: sortButton) // Add the sort button to the navigation bar
+        .whiteNavigationTitle()
+        .navigationBarItems(trailing: sortButton)
         .alert("Delete Product", isPresented: $showingAlert, presenting: selectedProduct) { product in
             Button("Delete", role: .destructive) {
                 if let index = list.products.firstIndex(where: { $0.id == product.id }) {
@@ -77,7 +106,7 @@ struct ProductListView: View {
             guard let selectedProduct = product else {
                 return
             }
-            
+
             Task {
                 do {
                     let fullProduct = try await NetworkService.shared.fetchProduct(barcode: selectedProduct._id)
@@ -93,18 +122,17 @@ struct ProductListView: View {
             }
         }
         .sheet(isPresented: $showingListPicker) {
-            ListPickerView(isPresented: $showingListPicker, product: selectedProduct!) // Pass the selected product
+            ListPickerView(isPresented: $showingListPicker, product: selectedProduct!)
         }
         .toast()
-        // .enableInjection()
     }
 
     private var sortButton: some View {
         Menu {
             Button(action: {
-                sortOption = sortOption == .newest ? .oldest : .newest // Combined toggle
+                sortOption = sortOption == .newest ? .oldest : .newest
             }) {
-                Label("Order: \(sortOption == .newest ? "Newest" : "Oldest")", systemImage: sortOption == .newest ? "arrow.up" : "arrow.down") // Updated label and image
+                Label("Order: \(sortOption == .newest ? "Newest" : "Oldest")", systemImage: sortOption == .newest ? "arrow.up" : "arrow.down")
             }
             ForEach(SortOption.allCases.filter { $0 != .newest && $0 != .oldest }, id: \.self) { option in
                 Button(action: {
@@ -114,8 +142,9 @@ struct ProductListView: View {
                 }
             }
         } label: {
-            Label("Order", systemImage: "arrow.up.arrow.down") 
+            Label("Order", systemImage: "arrow.up.arrow.down")
                 .font(.headline)
+                .foregroundColor(.white)
         }
     }
 }

@@ -11,7 +11,8 @@ struct CardView<Content: View>: View {
         content
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.white)
             .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }

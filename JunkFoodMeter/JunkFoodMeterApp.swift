@@ -7,13 +7,37 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
+
+struct WhiteNavigationTitleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color(uiColor: .systemGreen), for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+    }
+}
+
+extension View {
+    func whiteNavigationTitle() -> some View {
+        modifier(WhiteNavigationTitleModifier())
+    }
+}
 
 @main
 struct NutritionScoreApp: App {
     @State private var productListManager = ProductListManager.shared
     @State private var messageHandler = MessageHandler.shared
     @State private var networkService = NetworkService.shared
-    @State private var searchText = ""
+    
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.backgroundColor = UIColor(Color.systemBackground)
+        UITabBar.appearance().standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -21,6 +45,8 @@ struct NutritionScoreApp: App {
                 .environment(messageHandler)
                 .environment(productListManager)
                 .environment(networkService)
+                .preferredColorScheme(.light)
+                .tint(.white)
         }
     }
 }

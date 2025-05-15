@@ -9,7 +9,7 @@ enum MessageType {
     var backgroundColor: Color {
         switch self {
         case .success:
-            return .black.opacity(0.7)
+            return Color.tertiarySystemBackground
         case .error:
             return .red.opacity(0.8)
         }

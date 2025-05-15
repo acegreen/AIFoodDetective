@@ -3,157 +3,198 @@ import SwiftUI
 
 struct ProfileView: View {
 //    @ObserveInjection var inject
-    @State private var isSignedIn = false
-    @State private var showingSignIn = false
-    
+
+    // MARK: - State
+    @State private var selectedActivity: ActivityType = .viewed
+    @State private var selectedTime: TimeFilter = .week
+
+    // MARK: - Enums
+    enum ActivityType: String, CaseIterable {
+        case viewed = "Viewed"
+        case scanned = "Scanned"
+        case liked = "Liked"
+        case reviewed = "Reviewed"
+    }
+    enum TimeFilter: String, CaseIterable {
+        case week = "Week"
+        case month = "Month"
+        case year = "Year"
+    }
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-                    // Welcome Card
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Welcome!")
-                            .font(.title)
-                            .bold()
-                        
-                        Text("Sign-in or sign-up to join our community")
-                            .font(.body)
-                        
-                        Button(action: {
-                            showingSignIn = true
-                        }) {
-                            Text("Sign in")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                        }
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(10)
-                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    
-                    // Food Preferences Card
-                    NavigationLink(destination: Text("Food Preferences")) {
-                        HStack(spacing: 16) {
-                            Image(systemName: "fork.knife")
-                                .font(.title2)
-                                .foregroundColor(.green)
-                                .frame(width: 24)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Food Preferences")
-                                    .font(.headline)
-                                    .foregroundColor(.green)
-                                Text("Choose what information about food matters most to you.")
+                VStack(spacing: 24) {
+                    // Top Section: Username, Avatar, Settings
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                ProfileAvatarView()
+                                VStack(alignment: .leading) {
+                                    Text("Ace Thinker")
+                                        .font(.title2.bold())
+                                        .foregroundColor(.white)
+                                    Button("Edit profile") {
+                                        // Edit action
+                                    }
                                     .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.leading)
+                                    .foregroundColor(.white)
+                                }
                             }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        Spacer()
                     }
-                    
-                    // Prices Card
-                    NavigationLink(destination: Text("Prices")) {
-                        HStack(spacing: 16) {
-                            Image(systemName: "dollarsign.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.green)
-                                .frame(width: 24)
-                            
-                            Text("Prices")
+                    .padding(.horizontal)
+
+                    // Stats Row
+                    HStack(spacing: 32) {
+                        ProfileStatView(title: "LIKES", value: "1")
+                        ProfileStatView(title: "LISTS", value: "3")
+                        ProfileStatView(title: "ING. PREF.", value: "0")
+                    }
+                    .padding(.horizontal)
+
+                    // Activity Stats
+                    HStack(spacing: 32) {
+                        ProfileStatView(title: "YOUR VIEWS", value: "3")
+                        ProfileStatView(title: "YOUR BADGES", value: "0", icon: "star.fill", iconColor: .white)
+                        ProfileStatView(title: "YOUR REVIEWS", value: "0", icon: "text.bubble.fill", iconColor: .white)
+                        ProfileStatView(title: "REVIEW LIKES", value: "0", icon: "hand.thumbsup.fill", iconColor: .white)
+                    }
+                    .padding(.horizontal)
+
+                    // Activities Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Activities")
                                 .font(.headline)
-                            
+                                .foregroundColor(.white)
+                            Image(systemName: "info.circle")
+                                .foregroundColor(.white)
                             Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    }
-                    
-                    // Donate Card
-                    Button(action: {
-                        // Handle donate action
-                    }) {
-                        HStack(spacing: 16) {
-                            Image(systemName: "heart.fill")
-                                .font(.title2)
-                                .foregroundColor(.green)
-                                .frame(width: 24)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Donate")
-                                    .font(.headline)
-                                Text("Donate to Nutrition Score")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                        // Activity Tabs
+                        HStack(spacing: 12) {
+                            ForEach(ActivityType.allCases, id: \.self) { type in
+                                Button {
+                                    selectedActivity = type
+                                } label: {
+                                    Text(type.rawValue)
+                                        .font(.subheadline.bold())
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 16)
+                                        .border(.white)
+                                        .background(selectedActivity == type ? Color.white.opacity(0.3): Color.clear)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(8)
+                                }
                             }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "arrow.up.forward.square")
-                                .foregroundColor(.secondary)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    }
-                    
-                    // App Settings Card
-                    NavigationLink(destination: Text("App Settings")) {
-                        HStack(spacing: 16) {
-                            Image(systemName: "gearshape.fill")
-                                .font(.title2)
-                                .foregroundColor(.green)
-                                .frame(width: 24)
+
+                        VStack(alignment: .center) {
                             
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("App Settings")
-                                    .font(.headline)
-                                Text("Dark mode, Languages...")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                        // Time Filter
+                        HStack(spacing: 12) {
+                            ForEach(TimeFilter.allCases, id: \.self) { filter in
+                                Button {
+                                    selectedTime = filter
+                                } label: {
+                                    Text(filter.rawValue)
+                                        .font(.subheadline)
+                                        .padding(.vertical, 4)
+                                        .padding(.horizontal, 12)
+                                        .background(selectedTime == filter ? Color.white.opacity(0.3) : Color.clear)
+                                        .cornerRadius(12)
+                                }
                             }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        // Date Range
+                        Text("May 9, 2025 - May 15, 2025")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .padding(.top, 4)
+                        }
+                        // Bar Chart Placeholder
+                        ProfileBarChartView()
+                            .frame(maxWidth: .infinity, maxHeight: 120)
                     }
+                    .padding(.horizontal)
                 }
-                .padding()
+                .padding(.vertical)
             }
-            .navigationTitle("Profile")
-            .background(Color(.systemGroupedBackground))
-            .sheet(isPresented: $showingSignIn) {
-                SignInView()
-            }
+            .background(Color.systemBackground)
+            .navigationTitle("@DirtyThinker-5842869")
+            .navigationBarTitleDisplayMode(.inline)
+            .whiteNavigationTitle()
+            .navigationBarItems(trailing: settingsButton)
         }
-//        .enableInjection()
+    }
+
+    private var settingsButton: some View {
+        Button {
+            // Settings action
+        } label: {
+            Image(systemName: "gearshape")
+                .font(.title2)
+                .foregroundColor(.white)
+        }
     }
 }
 
-#Preview {
-    ProfileView()
-} 
+// MARK: - Subviews
+
+struct ProfileAvatarView: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.green)
+                .frame(width: 64, height: 64)
+            Image(systemName: "person.crop.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 56, height: 56)
+                .foregroundColor(.white)
+            // Add overlay heart if needed
+        }
+    }
+}
+
+struct ProfileStatView: View {
+    let title: String
+    let value: String
+    var icon: String? = nil
+    var iconColor: Color = .white
+
+    var body: some View {
+        VStack(spacing: 4) {
+            if let icon = icon {
+                Image(systemName: icon)
+                    .foregroundColor(iconColor)
+            }
+            Text(value)
+                .font(.title2.bold())
+                .foregroundColor(.white)
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.white)
+        }
+    }
+}
+
+struct ProfileBarChartView: View {
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 12) {
+            ForEach(0..<7) { i in
+                VStack {
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(i == 0 ? Color.white : Color.white.opacity(0.2))
+                        .frame(width: 18, height: i == 0 ? 60 : 10)
+                    Text(["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"][i])
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                }
+            }
+        }
+    }
+}

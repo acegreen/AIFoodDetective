@@ -35,7 +35,10 @@ struct ScanLogView: View {
 
                 listSection
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.systemBackground)
             .navigationTitle("Scan Log")
+            .whiteNavigationTitle()
             .background(
                 Group {
                     NavigationLink(destination: scanHistoryDestination) {
@@ -120,7 +123,7 @@ struct ScanLogView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(list.name.rawValue)
                                 .font(.headline)
-                                .foregroundColor(.green)
+                                .foregroundColor(.secondary)
                             Text(list.products.isEmpty ? "Empty list" : "\(list.products.count) products")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
@@ -128,7 +131,7 @@ struct ScanLogView: View {
                     }
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.systemBackground))
+                    .background(.white)
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                     .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
@@ -146,7 +149,7 @@ struct ScanLogView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(list.name.rawValue)
                                 .font(.headline)
-                                .foregroundColor(.green)
+                                .foregroundColor(.secondary)
                             Text(list.products.isEmpty ? "Empty list" : "\(list.products.count) products")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
@@ -154,7 +157,7 @@ struct ScanLogView: View {
                     }
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.systemBackground))
+                    .background(.white)
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                     .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
@@ -184,7 +187,7 @@ struct ScanLogView: View {
                 HStack {
                     Text("CUSTOM LISTS")
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
@@ -192,13 +195,14 @@ struct ScanLogView: View {
                         showingCreateList = true
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundColor(.green)
+                            .foregroundColor(.white)
                     }
                 }
                 .padding(16)
             }
         }
         .listStyle(PlainListStyle())
+        .scrollContentBackground(.hidden)
     }
 
     private var scanHistoryDestination: some View {

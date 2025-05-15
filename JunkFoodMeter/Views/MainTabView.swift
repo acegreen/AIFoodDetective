@@ -32,7 +32,6 @@ struct MainTabView: View {
                 }
                 .tag(2)
         }
-        .tint(.green)
         .ignoresSafeArea(.keyboard)
         //        .enableInjection()
     }

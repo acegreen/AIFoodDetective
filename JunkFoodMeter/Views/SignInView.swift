@@ -8,22 +8,22 @@ struct SignInView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
+            VStack(alignment: .center, spacing: 20) {
                 // Header
                 VStack(spacing: 12) {
                     Image(systemName: "person.circle.fill")
                         .font(.system(size: 100))
                         .foregroundColor(.green)
                     
-                    Text("Welcome to Nutrition Score")
-                        .font(.title2)
-                        .bold()
+                    Text("Welcome to JunkFoodMeter")
+                        .font(.title2).bold()
+                        .foregroundColor(.primary)
+                         .multilineTextAlignment(.center)
                     
                     Text("Sign in to contribute and access your personal data")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal)
                 }
                 .padding(48)
                 

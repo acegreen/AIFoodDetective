@@ -33,19 +33,15 @@ struct JunkFoodMeterView: View {
     }
 
     var body: some View {
-        CardView {
             VStack(alignment: .leading, spacing: 16) {
-                SectionHeader(title: "LEVEL", systemImage: "chart.bar.fill")
-
-                VStack(alignment: .center, spacing: 20) {
-                    // Gauge View
+                // Gauge View
                     ZStack {
                         // Background semi-circle
                         Circle()
                             .trim(from: 0.5, to: 1.0)
                             .stroke(
                                 LinearGradient(
-                                    gradient: Gradient(colors: [.mint, .green, .yellow, .orange, .red]),
+                                    gradient: Gradient(colors: [.green, .yellow, .orange, .red]),
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 ),
@@ -74,11 +70,9 @@ struct JunkFoodMeterView: View {
                             .shadow(radius: 2)
                             .offset(y: 40)
                     }
-                }
                 .frame(maxWidth: .infinity)
-                .padding(.top, 24)
+                .padding(.top, 8)
             }
-        }
         // .enableInjection()
     }
 }

@@ -24,7 +24,7 @@ struct ManualBarcodeEntryView: View {
                             .scaledToFit()
                             .frame(height: 80)
                             .padding()
-                            .background(Color.mint.opacity(0.2))
+                            .background(Color.green.opacity(0.2))
                             .cornerRadius(8)
                     }
                     
@@ -127,7 +127,7 @@ struct KeypadButton: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(Color(.systemBackground))
+            .greenBackground()
             .cornerRadius(8)
             .shadow(radius: 1)
         }
