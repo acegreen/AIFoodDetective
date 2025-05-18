@@ -16,7 +16,7 @@ struct AIAnalysisView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Button(action: { withAnimation { isExpanded.toggle() }}) {
                     HStack {
-                        SectionHeader(title: "AI Analysis", systemImage: "wand.and.sparkles")
+                        SectionHeader(title: "AI Analysis", systemImage: "lasso.badge.sparkles")
                         Spacer()
                         Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                             .foregroundColor(.secondary)

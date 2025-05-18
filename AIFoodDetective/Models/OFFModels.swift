@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 // MARK: - Welcome
 struct Welcome: Codable {
@@ -61,6 +62,22 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
     // New labels
     let labels: String?
     
+    // Image data
+    let imageData: Data?
+    
+    // AI Analysis result
+    let aiAnalysis: String?
+    
+    // Computed property for image URL
+    var imageFrontURL: URL? {
+        guard let urlString = imageFrontUrl else {
+            print("DEBUG: imageFrontUrl is nil")
+            return nil
+        }
+        let url = URL(string: urlString)
+        return url
+    }
+    
     enum CodingKeys: String, CodingKey {
         case _id
         case productName = "product_name"
@@ -85,6 +102,8 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         case imageFrontSmallUrl = "image_front_small_url"
         case imageFrontThumbUrl = "image_front_thumb_url"
         case imageFrontUrl = "image_front_url"
+        case imageData
+        case aiAnalysis
         
         // New coding keys
         case createdT = "created_t"
@@ -113,10 +132,14 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         hasher.combine(_id) // Hash based on unique identifier
     }
 
-    /// Placeholder logic for demo purposes
+    /// Junk score from AI analysis or calculated value
     var junkScore: Double {
-        // TODO: Replace with real logic
-        // Example: high sugar and high starch = high junk score
+        // First try to get the score from AI analysis
+        if let aiAnalysis, let parsedAnalysis = AIAnalysis.parse(from: aiAnalysis) {
+            return parsedAnalysis.junkScore
+        }
+        
+        // Fallback to calculated score
         let sugar = nutriments?.sugars ?? 0
         let starch = nutriments?.carbohydrates ?? 0
         let score = min(1.0, (sugar + starch) / 100.0)
@@ -152,12 +175,204 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             completeness: nil,
             uniqueScansN: nil,
             sources: nil,
-            labels: nil
+            labels: nil,
+            imageData: nil,
+            aiAnalysis: nil
         )
     }
 
     static var placeholderList: [Product] {
         [Product.placeholder, Product.placeholder, Product.placeholder]
+    }
+
+    static func createFromAIAnalysis(result: String, image: UIImage?) -> Product {
+        // Create a unique ID for the AI-analyzed meal
+        let uniqueId = "AI_\(UUID().uuidString)"
+        
+        // Convert image to data
+        let imageData = image?.jpegData(compressionQuality: 0.8)
+        
+        // Parse the AI response using MealAnalysis
+        guard let analysis = AIAnalysis.parse(from: result) else {
+            // Fallback to basic product if parsing fails
+            return Product(
+                _id: uniqueId,
+                productName: "AI Analyzed Meal",
+                brands: "AI Analysis",
+                nutriments: nil,
+                ingredients: nil,
+                ingredientsText: nil,
+                nutriscoreGrade: nil,
+                nutriscoreScore: nil,
+                origins: nil,
+                traces: nil,
+                packaging: nil,
+                quantity: nil,
+                servingSize: "100g",
+                categories: nil,
+                allergens: nil,
+                allergensFromIngredients: nil,
+                brandOwner: nil,
+                stores: nil,
+                novaGroup: nil,
+                ecoscore: nil,
+                imageFrontSmallUrl: nil,
+                imageFrontThumbUrl: nil,
+                imageFrontUrl: nil,
+                createdT: Int(Date().timeIntervalSince1970),
+                completeness: nil,
+                uniqueScansN: nil,
+                sources: nil,
+                labels: nil,
+                imageData: imageData,
+                aiAnalysis: nil
+            )
+        }
+        
+        // Create Nutriments object from the analysis
+        let nutriments = Nutriments.fromAI(
+            proteins: analysis.nutritionalInfo.proteins,
+            carbs: analysis.nutritionalInfo.carbohydrates,
+            fats: analysis.nutritionalInfo.fats,
+            sugars: analysis.nutritionalInfo.sugars,
+            fiber: analysis.nutritionalInfo.fiber,
+            starch: analysis.nutritionalInfo.starch,
+            seedOils: analysis.nutritionalInfo.seedOils
+        )
+        
+        // Convert ingredients to ProductIngredient objects
+        let ingredients = analysis.ingredients.map { ingredient in
+            ProductIngredient(
+                id: UUID().uuidString,
+                text: ingredient,
+                vegan: nil,
+                vegetarian: nil,
+                percentEstimate: nil
+            )
+        }
+        
+        // Create a Product from the analysis
+        return Product(
+            _id: uniqueId,
+            productName: analysis.mainDish,
+            brands: "AI Analysis",
+            nutriments: nutriments,
+            ingredients: ingredients,
+            ingredientsText: analysis.ingredients.joined(separator: ", "),
+            nutriscoreGrade: calculateNutriScore(nutriments: nutriments),
+            nutriscoreScore: calculateNutriScoreValue(nutriments: nutriments),
+            origins: nil,
+            traces: nil,
+            packaging: nil,
+            quantity: analysis.portionSize,
+            servingSize: "100g",
+            categories: nil,
+            allergens: nil,
+            allergensFromIngredients: nil,
+            brandOwner: nil,
+            stores: nil,
+            novaGroup: nil,
+            ecoscore: nil,
+            imageFrontSmallUrl: nil,
+            imageFrontThumbUrl: nil,
+            imageFrontUrl: nil,
+            createdT: Int(Date().timeIntervalSince1970),
+            completeness: nil,
+            uniqueScansN: nil,
+            sources: nil,
+            labels: nil,
+            imageData: imageData,
+            aiAnalysis: result
+        )
+    }
+    
+    // Helper function to calculate NutriScore grade
+    private static func calculateNutriScore(nutriments: Nutriments?) -> String {
+        let score = calculateNutriScoreValue(nutriments: nutriments)
+        switch score {
+        case ..<0: return "a"
+        case 0...2: return "b"
+        case 3...10: return "c"
+        case 11...18: return "d"
+        default: return "e"
+        }
+    }
+    
+    // Helper function to calculate NutriScore value
+    private static func calculateNutriScoreValue(nutriments: Nutriments?) -> Double {
+        var score = 0.0
+        
+        // Negative points
+        if let energy = nutriments?.energyKcal {
+            if energy > 335 { score += 10 }
+            else if energy > 301 { score += 9 }
+            else if energy > 268 { score += 8 }
+            else if energy > 234 { score += 7 }
+            else if energy > 201 { score += 6 }
+            else if energy > 167 { score += 5 }
+            else if energy > 134 { score += 4 }
+            else if energy > 100 { score += 3 }
+            else if energy > 67 { score += 2 }
+            else if energy > 33 { score += 1 }
+        }
+        
+        if let sugars = nutriments?.sugars {
+            if sugars > 13.5 { score += 10 }
+            else if sugars > 12 { score += 9 }
+            else if sugars > 10.5 { score += 8 }
+            else if sugars > 9 { score += 7 }
+            else if sugars > 7.5 { score += 6 }
+            else if sugars > 6 { score += 5 }
+            else if sugars > 4.5 { score += 4 }
+            else if sugars > 3 { score += 3 }
+            else if sugars > 1.5 { score += 2 }
+            else if sugars > 0 { score += 1 }
+        }
+        
+        if let satFat = nutriments?.saturatedFat {
+            if satFat > 10 { score += 10 }
+            else if satFat > 9 { score += 9 }
+            else if satFat > 8 { score += 8 }
+            else if satFat > 7 { score += 7 }
+            else if satFat > 6 { score += 6 }
+            else if satFat > 5 { score += 5 }
+            else if satFat > 4 { score += 4 }
+            else if satFat > 3 { score += 3 }
+            else if satFat > 2 { score += 2 }
+            else if satFat > 1 { score += 1 }
+        }
+        
+        if let sodium = nutriments?.sodium {
+            if sodium > 900 { score += 10 }
+            else if sodium > 810 { score += 9 }
+            else if sodium > 720 { score += 8 }
+            else if sodium > 630 { score += 7 }
+            else if sodium > 540 { score += 6 }
+            else if sodium > 450 { score += 5 }
+            else if sodium > 360 { score += 4 }
+            else if sodium > 270 { score += 3 }
+            else if sodium > 180 { score += 2 }
+            else if sodium > 90 { score += 1 }
+        }
+        
+        // Positive points
+        if let fiber = nutriments?.fiber {
+            if fiber > 4.7 { score -= 5 }
+            else if fiber > 3.7 { score -= 4 }
+            else if fiber > 2.8 { score -= 3 }
+            else if fiber > 1.9 { score -= 2 }
+            else if fiber > 0.9 { score -= 1 }
+        }
+        
+        if let protein = nutriments?.proteins {
+            if protein > 8.0 { score -= 5 }
+            else if protein > 6.4 { score -= 4 }
+            else if protein > 4.8 { score -= 3 }
+            else if protein > 3.2 { score -= 2 }
+            else if protein > 1.6 { score -= 1 }
+        }
+        
+        return score
     }
 }
 
@@ -211,6 +426,8 @@ struct Nutriments: Codable {
     var transFat: Double? { transFat_value }
     var sugars: Double? { sugars_value }
     var fiber: Double? { fiber_value }
+    var starch: Double? { starch_value }
+    var seedOils: Double? { seedOils_value }
     var cholesterol: Double? { cholesterol_value }
     var sodium: Double? { sodium_value }
     var calcium: Double? { calcium_value }
@@ -256,6 +473,10 @@ struct Nutriments: Codable {
     private let sugars_unit: String?
     private let fiber_value: Double?
     private let fiber_unit: String?
+    private let starch_value: Double?
+    private let starch_unit: String?
+    private let seedOils_value: Double?
+    private let seedOils_unit: String?
     private let cholesterol_value: Double?
     private let cholesterol_unit: String?
     private let sodium_value: Double?
@@ -324,6 +545,10 @@ struct Nutriments: Codable {
         case sugars_unit = "sugars_unit"
         case fiber_value = "fiber_value"
         case fiber_unit = "fiber_unit"
+        case starch_value = "starch_value"
+        case starch_unit = "starch_unit"
+        case seedOils_value = "seed_oils_value"
+        case seedOils_unit = "seed_oils_unit"
         case cholesterol_value = "cholesterol_value"
         case cholesterol_unit = "cholesterol_unit"
         case sodium_value = "sodium_value"
@@ -493,6 +718,42 @@ struct Nutriments: Codable {
         
         let massUnit = UnitMass.from(string: unit)
         return Measurement(value: value, unit: massUnit)
+    }
+
+    var energyKcal: Double? { energyKcal_value }
+    var energyKj: Double? { energyKj_value }
+}
+
+// Factory for AI analysis
+extension Nutriments {
+    static func fromAI(
+        proteins: Double?,
+        carbs: Double?,
+        fats: Double?,
+        sugars: Double?,
+        fiber: Double?,
+        starch: Double?,
+        seedOils: Double?
+    ) -> Nutriments? {
+        let dict: [String: Any?] = [
+            "proteins_value": proteins,
+            "proteins_unit": "g",
+            "carbohydrates_value": carbs,
+            "carbohydrates_unit": "g",
+            "fat_value": fats,
+            "fat_unit": "g",
+            "sugars_value": sugars,
+            "sugars_unit": "g",
+            "fiber_value": fiber,
+            "fiber_unit": "g",
+            "starch_value": starch,
+            "starch_unit": "g",
+            "seed_oils_value": seedOils,
+            "seed_oils_unit": "g"
+        ]
+        let filtered = dict.compactMapValues { $0 }
+        guard let data = try? JSONSerialization.data(withJSONObject: filtered, options: []) else { return nil }
+        return try? JSONDecoder().decode(Nutriments.self, from: data)
     }
 }
 
@@ -1009,5 +1270,150 @@ class UnitIU: Dimension {
     
     override class func baseUnit() -> Self {
         return internationalUnit as! Self
+    }
+}
+
+struct AIAnalysis: Codable {
+    let mainDish: String
+    let ingredients: [String]
+    let nutritionalInfo: NutritionalInfo
+    let portionSize: String
+    let junkScore: Double
+    let additionalNotes: String
+    
+    struct NutritionalInfo: Codable {
+        let carbohydrates: Double
+        let starch: Double
+        let proteins: Double
+        let fats: Double
+        let seedOils: Double
+        let sugars: Double
+        let fiber: Double
+    }
+}
+
+extension AIAnalysis {
+    static func parse(from response: String) -> AIAnalysis? {
+        let lines = response.components(separatedBy: .newlines)
+        var currentSection = ""
+        var mainDish = ""
+        var ingredients: [String] = []
+        var nutritionalInfo: NutritionalInfo?
+        var portionSize = ""
+        var junkScore: Double?
+        var additionalNotes = ""
+        
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+            
+            if trimmedLine.isEmpty { continue }
+            
+            if trimmedLine.starts(with: "Main Dish:") {
+                mainDish = trimmedLine.replacingOccurrences(of: "Main Dish:", with: "").trimmingCharacters(in: .whitespaces)
+                currentSection = "mainDish"
+            } else if trimmedLine.starts(with: "Ingredients:") {
+                currentSection = "ingredients"
+            } else if trimmedLine.starts(with: "Nutritional Information") {
+                currentSection = "nutritional"
+            } else if trimmedLine.starts(with: "Portion Size:") {
+                portionSize = trimmedLine.replacingOccurrences(of: "Portion Size:", with: "").trimmingCharacters(in: .whitespaces)
+                currentSection = "portion"
+            } else if trimmedLine.starts(with: "Junk Score:") {
+                if let score = extractNumber(from: trimmedLine) {
+                    junkScore = score
+                }
+                currentSection = "junkScore"
+            } else if trimmedLine.starts(with: "Additional Notes:") {
+                currentSection = "notes"
+            } else {
+                switch currentSection {
+                case "ingredients":
+                    if !trimmedLine.starts(with: "-") {
+                        ingredients.append(trimmedLine)
+                    }
+                case "nutritional":
+                    if nutritionalInfo == nil {
+                        nutritionalInfo = parseNutritionalInfo(from: lines)
+                    }
+                case "notes":
+                    additionalNotes += trimmedLine + "\n"
+                default:
+                    break
+                }
+            }
+        }
+        
+        guard let nutrition = nutritionalInfo,
+              let score = junkScore else {
+            return nil
+        }
+        
+        return AIAnalysis(
+            mainDish: mainDish,
+            ingredients: ingredients,
+            nutritionalInfo: nutrition,
+            portionSize: portionSize,
+            junkScore: score,
+            additionalNotes: additionalNotes.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+    }
+    
+    private static func parseNutritionalInfo(from lines: [String]) -> NutritionalInfo? {
+        var carbs: Double?
+        var starch: Double?
+        var proteins: Double?
+        var fats: Double?
+        var seedOils: Double?
+        var sugars: Double?
+        var fiber: Double?
+        
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+            if trimmedLine.contains("Carbohydrates:") {
+                carbs = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Starch:") {
+                starch = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Proteins:") {
+                proteins = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Fats:") {
+                fats = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Seed Oils:") {
+                seedOils = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Sugars:") {
+                sugars = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Fiber:") {
+                fiber = extractNumber(from: trimmedLine)
+            }
+        }
+        
+        guard let carbs = carbs,
+              let starch = starch,
+              let proteins = proteins,
+              let fats = fats,
+              let seedOils = seedOils,
+              let sugars = sugars,
+              let fiber = fiber else {
+            return nil
+        }
+        
+        return NutritionalInfo(
+            carbohydrates: carbs,
+            starch: starch,
+            proteins: proteins,
+            fats: fats,
+            seedOils: seedOils,
+            sugars: sugars,
+            fiber: fiber
+        )
+    }
+    
+    private static func extractNumber(from string: String) -> Double? {
+        let pattern = #"(\d+\.?\d*)"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: string, range: NSRange(string.startIndex..., in: string)),
+              let range = Range(match.range(at: 1), in: string) else {
+            return nil
+        }
+        return Double(string[range])
     }
 }

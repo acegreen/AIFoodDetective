@@ -2,17 +2,17 @@ import Foundation
 import Observation
 
 enum ProductListName: Codable, Equatable {
-    case scanHistory
-    case allViewedProducts
+    case scanned
+    case viewed
     case submitted
     case custom(String)  // Custom case now takes a String associated value
 
     var rawValue: String {
         switch self {
-        case .scanHistory:
-            return "Scan History"
-        case .allViewedProducts:
-            return "All Viewed Products"
+        case .scanned:
+            return "Scanned"
+        case .viewed:
+            return "Viewed"
         case .submitted:
             return "Submitted"
         case .custom(let name):

@@ -26,8 +26,8 @@ class ProductListManager {
               let decodedLists = try? JSONDecoder().decode([ProductList].self, from: data) else {
             // Return default lists if nothing is saved
             let defaultLists = [
-                ProductList(name: .scanHistory),
-                ProductList(name: .allViewedProducts)
+                ProductList(name: .scanned),
+                ProductList(name: .viewed)
             ]
             // Save default lists immediately
             if let encoded = try? JSONEncoder().encode(defaultLists) {
@@ -58,6 +58,19 @@ class ProductListManager {
                 saveProductLists()
                 return true
             }
+        }
+        return false
+    }
+    
+    func removeFromList(_ product: Product, list: ProductList) -> Bool {
+        if let index = productLists.firstIndex(where: { $0.id == list.id }) {
+            var updatedLists = productLists
+            let updatedList = list
+            updatedList.products.removeAll { $0.id == product.id }
+            updatedLists[index] = updatedList
+            productLists = updatedLists
+            saveProductLists()
+            return true
         }
         return false
     }

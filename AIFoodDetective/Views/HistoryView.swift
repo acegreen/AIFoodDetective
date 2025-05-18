@@ -2,7 +2,7 @@ import SwiftUI
 //import Inject
 import Observation
 
-struct ScanLogView: View {
+struct HistoryView: View {
     //    @ObserveInjection var inject
     @Environment(MessageHandler.self) var messageHandler
     @Environment(ProductListManager.self) var productListManager
@@ -14,27 +14,37 @@ struct ScanLogView: View {
     @State private var showingEditAlert = false
     @State private var selectedTab: Tab = .scanned
     @State private var products: [Product] = []
+    @State private var navigationPath = NavigationPath()
 
     enum Tab: String, CaseIterable, Identifiable {
         case scanned = "Scanned"
         case viewed = "Viewed"
         case submitted = "Submitted"
+        
         var id: String { rawValue }
+
+        var toProductListName: ProductListName {
+            switch self {
+            case .scanned: return .scanned
+            case .viewed: return .viewed
+            case .submitted: return .submitted
+            }
+        }
     }
 
     var filteredProducts: [Product] {
         switch selectedTab {
-        case .viewed:
-            return productListManager.systemLists.first(where: { $0.name == .allViewedProducts })?.products ?? []
         case .scanned:
-            return productListManager.systemLists.first(where: { $0.name == .scanHistory })?.products ?? []
+            return productListManager.systemLists.first(where: { $0.name == .scanned })?.products ?? []
+        case .viewed:
+            return productListManager.systemLists.first(where: { $0.name == .viewed })?.products ?? []
         case .submitted:
             return productListManager.systemLists.first(where: { $0.name == .submitted })?.products ?? []
         }
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack(spacing: 0) {
                 Picker("History", selection: $selectedTab) {
                     ForEach(Tab.allCases) { tab in
@@ -49,7 +59,7 @@ struct ScanLogView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.systemBackground)
-            .navigationTitle("Scans")
+            .navigationTitle("History")
             .whiteNavigationTitle()
             .sheet(isPresented: $showingEditAlert) {
                 if let list = productListManager.selectedList {
@@ -75,25 +85,26 @@ struct ScanLogView: View {
             }
             .overlay(MessageView())
             .environment(messageHandler)
-            .alert("Delete List", isPresented: $showingDeleteAlert) {
-                if let list = productListManager.selectedList {
-                    Button("Delete", role: .destructive) {
-                        if let index = productListManager.productLists.firstIndex(where: { $0.id == list.id }) {
-                            productListManager.productLists.remove(at: index)
-                            productListManager.saveProductLists()
-                            messageHandler.show("Deleted list '\(list.name.rawValue)'")
-                        }
-                        productListManager.selectedList = nil
+            .navigationDestination(for: Product.self) { product in
+                ProductDetailsView(product: product)
+            }
+        .alert("Delete Product", isPresented: $showingDeleteAlert) {
+            if let product = productListManager.selectedProduct {
+                Button("Delete", role: .destructive) {
+                    if let list = productListManager.systemLists.first(where: { $0.name == selectedTab.toProductListName }) {
+                        _ = productListManager.removeFromList(product, list: list)
                     }
-                    Button("Cancel", role: .cancel) {
-                        productListManager.selectedList = nil
-                    }
+                    productListManager.selectedProduct = nil
                 }
-            } message: {
-                if let list = productListManager.selectedList {
-                    Text("Are you sure you want to delete '\(list.name.rawValue)'? This action cannot be undone.")
+                Button("Cancel", role: .cancel) {
+                    productListManager.selectedProduct = nil
                 }
             }
+        } message: {
+            if let product = productListManager.selectedProduct {
+                Text("Are you sure you want to delete '\(product.productName)'? This action cannot be undone.")
+            }
+        }
             .toast()
         }
     }
@@ -101,8 +112,10 @@ struct ScanLogView: View {
     private var listSection: some View {
         List {
             ForEach(filteredProducts, id: \.id) { product in
-                NavigationLink(destination: ProductDetailsView(product: product)) {
-                    ProductCellView(product: product)
+                Button {
+                    navigationPath.append(product)
+                } label: {
+                    ProductCellView(product: product, showDetails: false)
                 }
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
@@ -117,9 +130,8 @@ struct ScanLogView: View {
                 }
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button(role: .destructive) {
-                        if let list = productListManager.systemLists.first(where: { $0.name == selectedTabListName }) {
-                            _ = productListManager.addToList(product, list: list)
-                        }
+                        productListManager.selectedProduct = product
+                        showingDeleteAlert = true
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
@@ -130,18 +142,10 @@ struct ScanLogView: View {
         .listStyle(PlainListStyle())
         .scrollContentBackground(.hidden)
     }
-
-    private var selectedTabListName: ProductListName {
-        switch selectedTab {
-        case .scanned: return .scanHistory
-        case .viewed: return .allViewedProducts
-        case .submitted: return .submitted // If you have this case
-        }
-    }
 }
 
 #Preview {
-    ScanLogView(scannedCode: .constant(""))
+    HistoryView(scannedCode: .constant(""))
         .environment(MessageHandler.shared)
 }
 

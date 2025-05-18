@@ -34,7 +34,7 @@ class AINetworkService {
                     "content": [
                         [
                             "type": "text",
-                            "text": "Analyze this food image and provide a detailed breakdown of the meal. Include: 1) Main dishes and ingredients 2) Approximate portion sizes 3) Nutritional highlights (high in protein, carbs, etc.) 4) Any visible condiments or sides. Format the response in a clear, structured way."
+                            "text": "Analyze this food image and provide a detailed breakdown in the following format:\n\nMain Dish: [Name of the main dish]\n\nIngredients: [List of visible ingredients]\n\nNutritional Information (per 100g):\n   - Carbohydrates: [X]g\n   - Starch: [X]g\n   - Proteins: [X]g\n   - Fats: [X]g\n   - Seed Oils: [X]g\n   - Sugars: [X]g\n   - Fiber: [X]g\n\nPortion Size: [Estimated portion size]\n\nJunk Score: [X.XX] (where X.XX is a number between 0.00 and 1.00)\n   Calculate this score based on:\n   - High sugar content (increases score)\n   - High refined carbohydrates (increases score)\n   - High saturated fat (increases score)\n   - Low fiber (increases score)\n   - Low protein (increases score)\n   A score of 0.00 means very healthy, 1.00 means very unhealthy\n\nAdditional Notes: [Any other relevant information]\n\nPlease provide numerical values for all nutritional information to enable accurate junk score calculation. If exact values cannot be determined, provide reasonable estimates based on typical values for similar foods. The junk score must be a decimal number between 0.00 and 1.00."
                         ],
                         [
                             "type": "image_url",

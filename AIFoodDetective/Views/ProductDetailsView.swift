@@ -16,15 +16,15 @@ struct ProductDetailsView: View {
         ScrollView {
             LazyVStack(spacing: 20) {
                 // Product Info Section
-                ProductBasicInfoView(product: product)
-                
+                ProductCellView(product: product, showDetails: true)
+
                 // Junk Food Breakdown Section
                 JunkFoodBreakdownView(product: product)
                 
                 // Contained Ingredients Section
                 ContainedIngredientsView(ingredients: product.ingredients ?? [])
 
-                AIAnalysisView(aiResult: product.ingredientsText ?? "")
+                AIAnalysisView(aiResult: product.aiAnalysis ?? "")
             }
             .padding()
         }

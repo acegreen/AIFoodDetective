@@ -6,57 +6,61 @@
 //
 
 import SwiftUI
-// import Inject
+//import Inject
 
 struct JunkFoodMeterView: View {
-    // @ObserveInjection var inject
+    //    @ObserveInjection var inject
     let product: Product
 
     var needleRotation: Double {
-        -90.0 + (180.0 * Double(product.score))
+        -90.0 + (180.0 * Double(product.junkScore))
+    }
+
+    var scoreValue: String {
+        String(format: "%.0f", round(product.junkScore * 10))
     }
 
     var body: some View {
-            VStack(alignment: .leading, spacing: 16) {
-                // Gauge View
-                    ZStack {
-                        // Background semi-circle
-                        Circle()
-                            .trim(from: 0.5, to: 1.0)
-                            .stroke(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [.green, .yellow, .orange, .red]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                ),
-                                style: StrokeStyle(lineWidth: 20, lineCap: .round)
-                            )
-                            .frame(width: 200, height: 200)
+        VStack(alignment: .leading, spacing: 16) {
+            // Gauge View
+            ZStack {
+                // Background semi-circle
+                Circle()
+                    .trim(from: 0.5, to: 1.0)
+                    .stroke(
+                        LinearGradient(
+                            gradient: Gradient(colors: [.green, .yellow, .orange, .red]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ),
+                        style: StrokeStyle(lineWidth: 20, lineCap: .round)
+                    )
+                    .frame(width: 200, height: 200)
 
-                        // Needle
-                        Rectangle()
-                            .fill(Color.black)
-                            .frame(width: 4, height: 90)
-                            .offset(y: -45)
-                            .rotationEffect(.degrees(needleRotation))
-                            .animation(.easeInOut, value: product.score)
+                // Needle
+                Rectangle()
+                    .fill(Color.black)
+                    .frame(width: 4, height: 90)
+                    .offset(y: -45)
+                    .rotationEffect(.degrees(needleRotation))
+                    .animation(.easeInOut, value: product.junkScore)
 
-                        // Center circle
-                        Circle()
-                            .fill(Color.white)
-                            .frame(width: 20, height: 20)
-                            .shadow(radius: 2)
+                // Center circle
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 20, height: 20)
+                    .shadow(radius: 2)
 
-                        // Level indicator
-                        Text("\(product.score)".uppercased())
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                            .shadow(radius: 2)
-                            .offset(y: 40)
-                    }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 8)
+                // Level indicator
+                Text(scoreValue)
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                    .shadow(radius: 2)
+                    .offset(y: 40)
             }
-        // .enableInjection()
+            .frame(maxWidth: .infinity)
+            .padding(.top, 8)
+        }
+        //        .enableInjection()
     }
 }

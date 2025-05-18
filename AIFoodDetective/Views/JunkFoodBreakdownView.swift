@@ -10,12 +10,11 @@ import SwiftUI
 struct JunkFoodBreakdownView: View {
     let product: Product
 
-    // Placeholder: Replace with your actual breakdown logic
     var breakdown: [(label: String, value: Double, color: Color, icon: String)] {
         [
-            ("Starch", 10, .yellow, "leaf"),
-            ("Seed Oil", 3, .orange, "drop.fill"),
-            ("Sugar", 11, .red, "cube.fill")
+            ("Starch", product.nutriments?.starch ?? 0, .yellow, "leaf"),
+            ("Seed Oils", product.nutriments?.seedOils ?? 0, .orange, "drop.fill"),
+            ("Sugars", product.nutriments?.sugars ?? 0, .red, "cube.fill")
         ]
     }
 
@@ -65,14 +64,14 @@ struct JunkFoodBreakdownView: View {
 
                         // Legend (left-aligned, closer to cup)
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("Total Macros: \(String(format: "%.1f", total)) g")
+                            Text("Total: \(String(format: "%.1f", total)) g")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             ForEach(breakdown, id: \.label) { item in
                                 HStack(spacing: 8) {
                                     Image(systemName: item.icon)
                                         .foregroundColor(item.color)
-                                    Text("\(item.label): \(Int(item.value)) g")
+                                    Text("\(item.label): \(String(format: "%.1f", item.value)) g")
                                         .font(.subheadline)
                                 }
                             }

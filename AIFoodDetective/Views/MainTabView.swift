@@ -18,10 +18,10 @@ struct MainTabView: View {
             }
             .tag(0)
 
-            ScanLogView(scannedCode: $scannedCode)
+            HistoryView(scannedCode: $scannedCode)
                 .tabItem {
                     Image(systemName: "list.bullet.clipboard.fill")
-                    Text("Scans")
+                    Text("History")
                 }
                 .tag(1)
 
