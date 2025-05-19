@@ -20,7 +20,7 @@ struct HistoryView: View {
         case scanned = "Scanned"
         case viewed = "Viewed"
         case submitted = "Submitted"
-        
+
         var id: String { rawValue }
 
         var toProductListName: ProductListName {
@@ -80,7 +80,7 @@ struct HistoryView: View {
             }
             .sheet(isPresented: $showingListPicker) {
                 if let selectedProduct = productListManager.selectedProduct {
-                    ListPickerView(isPresented: $showingListPicker, product: selectedProduct)
+                    AddToListView(isPresented: $showingListPicker, product: selectedProduct)
                 }
             }
             .overlay(MessageView())
@@ -88,24 +88,23 @@ struct HistoryView: View {
             .navigationDestination(for: Product.self) { product in
                 ProductDetailsView(product: product)
             }
-        .alert("Delete Product", isPresented: $showingDeleteAlert) {
-            if let product = productListManager.selectedProduct {
-                Button("Delete", role: .destructive) {
-                    if let list = productListManager.systemLists.first(where: { $0.name == selectedTab.toProductListName }) {
-                        _ = productListManager.removeFromList(product, list: list)
+            .alert("Delete Product", isPresented: $showingDeleteAlert) {
+                if let product = productListManager.selectedProduct {
+                    Button("Delete", role: .destructive) {
+                        if let list = productListManager.systemLists.first(where: { $0.name == selectedTab.toProductListName }) {
+                            _ = productListManager.removeFromList(product, list: list)
+                        }
+                        productListManager.selectedProduct = nil
                     }
-                    productListManager.selectedProduct = nil
+                    Button("Cancel", role: .cancel) {
+                        productListManager.selectedProduct = nil
+                    }
                 }
-                Button("Cancel", role: .cancel) {
-                    productListManager.selectedProduct = nil
+            } message: {
+                if let product = productListManager.selectedProduct {
+                    Text("Are you sure you want to delete '\(product.productName)'? This action cannot be undone.")
                 }
             }
-        } message: {
-            if let product = productListManager.selectedProduct {
-                Text("Are you sure you want to delete '\(product.productName)'? This action cannot be undone.")
-            }
-        }
-            .toast()
         }
     }
 
@@ -119,6 +118,7 @@ struct HistoryView: View {
                 }
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
                 .swipeActions(edge: .leading) {
                     Button {
                         productListManager.selectedProduct = product

@@ -3,28 +3,14 @@ import Observation
 
 struct BarcodePreviewCard: View {
     @Binding var isPresented: Bool
-    let product: Product
     @State private var showingListPicker = false
-    @State private var productImage: UIImage?
-    
+    let product: Product
+
     var body: some View {
-        VStack(spacing: 20) {
-            // Header with close button
-            HStack {
-                Spacer()
-                Button {
-                    withAnimation {
-                        isPresented = false
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(Color(.systemGray3))
-                        .font(.title3)
-                }
-            }
-            
+        VStack(spacing: 24) {
             // Product Image
-            if let image = productImage {
+            if let imageData = product.imageData,
+                let image = UIImage(data: imageData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
@@ -51,7 +37,9 @@ struct BarcodePreviewCard: View {
                     .foregroundColor(.secondary)
             }
             .padding(.bottom, 12)
-            
+
+            Spacer()
+
             // Add to List Button
             HStack(spacing: 12) {
                 // Add to Custom List Button
@@ -65,40 +53,20 @@ struct BarcodePreviewCard: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(Color.green)
-                    .foregroundColor(.white)
+                    .background(Color.white)
+                    .foregroundColor(.green)
                     .cornerRadius(12)
                     .font(.headline)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(24)
-        .background(Color(.systemBackground))
-        .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 0)
-        .padding(.horizontal, 40)
+        .greenBackground()
         .sheet(isPresented: $showingListPicker) {
-            ListPickerView(isPresented: $showingListPicker, product: product)
+            AddToListView(isPresented: $showingListPicker, product: product)
         }
-        .task {
-            await loadProductImage()
-        }
-        .toast()
-    }
-    
-    private func loadProductImage() async {
-        guard let imageUrl = product.imageFrontUrl,
-              let url = URL(string: imageUrl) else { return }
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let image = UIImage(data: data) {
-                await MainActor.run {
-                    productImage = image
-                }
-            }
-        } catch {
-            print("Error loading image: \(error)")
-        }
+        .presentationDetents([.medium])
     }
 }
 
@@ -107,6 +75,4 @@ struct BarcodePreviewCard: View {
     let data = try! Data(contentsOf: url)
     let welcome = try! JSONDecoder().decode(Welcome.self, from: data)
     return BarcodePreviewCard(isPresented: .constant(true), product: welcome.product)
-        .environment(ProductListManager.shared)
-        .environment(MessageHandler.shared)
 } 

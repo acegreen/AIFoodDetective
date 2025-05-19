@@ -12,12 +12,24 @@ struct JunkFoodMeterView: View {
     //    @ObserveInjection var inject
     let product: Product
 
+    private let junkScoreColors: [Color] = [.green, .yellow, .orange, .red]
+    private let junkScoreRanges: [ClosedRange<Double>] = [0...0.25, 0.25...0.5, 0.5...0.75, 0.75...1.0]
+
     var needleRotation: Double {
-        -90.0 + (180.0 * Double(product.junkScore))
+        -90.0 + (180.0 * Double(product.junkScore / 10))
     }
 
     var scoreValue: String {
-        String(format: "%.0f", round(product.junkScore * 10))
+        String(format: "%.0f", round(product.junkScore))
+    }
+
+    private func colorForScore(_ score: Double) -> Color {
+        for (index, range) in junkScoreRanges.enumerated() {
+            if range.contains(score) {
+                return junkScoreColors[index]
+            }
+        }
+        return .red // Fallback color
     }
 
     var body: some View {
@@ -29,7 +41,7 @@ struct JunkFoodMeterView: View {
                     .trim(from: 0.5, to: 1.0)
                     .stroke(
                         LinearGradient(
-                            gradient: Gradient(colors: [.green, .yellow, .orange, .red]),
+                            gradient: Gradient(colors: junkScoreColors),
                             startPoint: .leading,
                             endPoint: .trailing
                         ),
@@ -39,7 +51,7 @@ struct JunkFoodMeterView: View {
 
                 // Needle
                 Rectangle()
-                    .fill(Color.black)
+                    .fill(colorForScore(product.junkScore))
                     .frame(width: 4, height: 90)
                     .offset(y: -45)
                     .rotationEffect(.degrees(needleRotation))

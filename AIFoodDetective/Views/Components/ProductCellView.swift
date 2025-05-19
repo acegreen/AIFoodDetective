@@ -83,7 +83,7 @@ struct ProductCellView: View {
                     }
                     Button("SHOP") {}
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                         .padding()
                         .background(Color.green)
                         .cornerRadius(8)

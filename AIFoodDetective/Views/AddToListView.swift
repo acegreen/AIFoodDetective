@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct ListPickerView: View {
+struct AddToListView: View {
     @Environment(ProductListManager.self) var productListManager
     @Environment(MessageHandler.self) var messageHandler
     @Binding var isPresented: Bool
     @State private var showingCreateList: Bool = false
 
     let product: Product
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -28,7 +28,6 @@ struct ListPickerView: View {
                     }
                 }
             }
-            .background(Color.systemBackground)
             .navigationTitle("Add to List")
             .navigationBarItems(leading: Button("Cancel") {
                 isPresented = false
@@ -46,6 +45,7 @@ struct ListPickerView: View {
                 }
             }
         }
+        .presentationBackground(Color.systemBackground)
         .presentationDetents([.medium])
     }
 }
@@ -54,7 +54,7 @@ struct ListPickerView: View {
     let url = Bundle.main.url(forResource: "sampleProduct", withExtension: "json")!
     let data = try! Data(contentsOf: url)
     let welcome = try! JSONDecoder().decode(Welcome.self, from: data)
-    return ListPickerView(isPresented: .constant(true), product: welcome.product)
+    return AddToListView(isPresented: .constant(true), product: welcome.product)
         .environment(ProductListManager.shared)
         .environment(MessageHandler.shared)
-} 
+}

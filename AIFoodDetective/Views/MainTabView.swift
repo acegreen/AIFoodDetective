@@ -33,6 +33,7 @@ struct MainTabView: View {
                 .tag(2)
         }
         .ignoresSafeArea(.keyboard)
+        .toast()
         //        .enableInjection()
     }
 }
@@ -42,5 +43,4 @@ struct MainTabView: View {
         .environment(MessageHandler.shared)
         .environment(ProductListManager.shared)
         .environment(NetworkService.shared)
-        .toast()
 }

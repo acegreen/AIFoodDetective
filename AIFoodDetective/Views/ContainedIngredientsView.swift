@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+// import Inject
 
 struct ContainedIngredientsView: View {
+    // @ObserveInjection var inject
     let ingredients: [ProductIngredient]
     @State private var isExpanded: Bool = true
     
@@ -29,20 +31,27 @@ struct ContainedIngredientsView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        ForEach(ingredients, id: \.text) { ingredient in
-                            HStack(spacing: 8) {
-                                if ingredient.isSuspicious {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundColor(.orange)
-                                }
-                                
-                                Text(ingredient.text)
-                                    .foregroundColor(ingredient.isSuspicious ? .orange : .primary)
-                                
-                                if let percent = ingredient.percentEstimate {
-                                    Text("(\(Int(percent))%)")
-                                        .foregroundColor(.secondary)
-                                        .font(.caption)
+                        if ingredients.isEmpty {
+                            Text("No ingredients information available")
+                                .foregroundColor(.secondary)
+                                .italic()
+                        } else {
+                            ForEach(ingredients.indices, id: \.self) { index in
+                                let ingredient = ingredients[index]
+                                HStack(spacing: 8) {
+                                    if ingredient.isSuspicious {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundColor(.orange)
+                                    }
+                                    
+                                    Text(ingredient.text)
+                                        .foregroundColor(ingredient.isSuspicious ? .orange : .primary)
+                                    
+                                    if let percent = ingredient.percentEstimate {
+                                        Text("(\(Int(percent))%)")
+                                            .foregroundColor(.secondary)
+                                            .font(.caption)
+                                    }
                                 }
                             }
                         }
@@ -51,5 +60,6 @@ struct ContainedIngredientsView: View {
                 }
             }
         }
+        // .enableInjection()
     }
 } 

@@ -17,6 +17,7 @@ struct CreateListView: View {
             Form {
                 TextField("List name", text: $listName)
             }
+            .greenBackground()
             .navigationTitle(isEditing ? "Edit List" : "Create New List")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -34,6 +35,7 @@ struct CreateListView: View {
                 }
             }
         }
+        .presentationBackground(Color.systemBackground)
         .presentationDetents([.medium])
     }
 }

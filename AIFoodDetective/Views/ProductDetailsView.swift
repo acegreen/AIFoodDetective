@@ -33,9 +33,8 @@ struct ProductDetailsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationTitle()
         .sheet(isPresented: $showingListPicker) {
-            ListPickerView(isPresented: $showingListPicker, product: product)
+            AddToListView(isPresented: $showingListPicker, product: product)
         }
-        .toast()
         .navigationBarItems(trailing: plusButton)
     }
 

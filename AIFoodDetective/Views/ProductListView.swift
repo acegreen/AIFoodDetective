@@ -122,9 +122,8 @@ struct ProductListView: View {
             }
         }
         .sheet(isPresented: $showingListPicker) {
-            ListPickerView(isPresented: $showingListPicker, product: selectedProduct!)
+            AddToListView(isPresented: $showingListPicker, product: selectedProduct!)
         }
-        .toast()
     }
 
     private var sortButton: some View {

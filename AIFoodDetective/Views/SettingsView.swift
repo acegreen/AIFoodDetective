@@ -31,7 +31,7 @@ struct SettingsView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemBackground))
+                .greenBackground()
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
 
@@ -59,7 +59,7 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     }
                     .padding()
-                    .background(Color(.systemBackground))
+                    .greenBackground()
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }
@@ -82,7 +82,7 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     }
                     .padding()
-                    .background(Color(.systemBackground))
+                    .greenBackground()
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }
@@ -112,7 +112,7 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     }
                     .padding()
-                    .background(Color(.systemBackground))
+                    .greenBackground()
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }
@@ -140,7 +140,7 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     }
                     .padding()
-                    .background(Color(.systemBackground))
+                    .greenBackground()
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }

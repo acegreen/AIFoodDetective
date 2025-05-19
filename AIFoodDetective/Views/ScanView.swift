@@ -9,25 +9,20 @@ struct ScanView: View {
     @State private var isScanning = false
     @Binding var selectedTab: Int
     @Binding var scannedCode: String
-    @State private var showAlert = false
-    @State private var showManualEntry = false
     @State private var cameraPermission: AVAuthorizationStatus = .notDetermined
     @State private var scanMode: ScanMode = .aiScan
     @State private var detectedFood: String?
-    @State private var showPhotoCapture = false
     @State private var triggerPhotoCapture = false
     @State private var isCameraReady = false
     @State private var aiLoading = false
-    @State private var aiResult: AIResult? = nil
-    @State private var showingProductPreview = false
+    @State private var showPhotoCapture = false
+    @State private var showingAIProductPreview = false
+    @State private var showingBarcodeProductPreview = false
+    @State private var showAlert = false
+    @State private var showManualEntry = false
     @State private var previewProduct: Product? = nil
     @State private var capturedImage: UIImage? = nil
     var onScan: ((String) -> Void)? = nil
-
-    struct AIResult: Identifiable {
-        let id = UUID()
-        let message: String
-    }
 
     enum ScanMode: String, CaseIterable, Identifiable {
         case aiScan = "AI Scan"
@@ -49,13 +44,13 @@ struct ScanView: View {
                             do {
                                 let product = try await NetworkService.shared.fetchProduct(barcode: code)
                                 previewProduct = product
-                                showingProductPreview = true
+                                showingBarcodeProductPreview = true
                                 // Add to scan history
                                 if let scannedList = productListManager.systemLists.first(where: { $0.name == .scanned }) {
                                     addToList(product, list: scannedList)
                                 }
                             } catch {
-                                // Handle error (e.g., show an alert)
+                                // TODO:  Handle error (e.g., show an alert)
                             }
                         }
                     }
@@ -71,15 +66,16 @@ struct ScanView: View {
                         Task {
                             do {
                                 let result = try await AINetworkService.shared.analyzeMealImage(image)
-                                aiResult = AIResult(message: result)
-                                // Create a product from the AI result and add to viewed products
                                 let product = Product.createFromAIAnalysis(result: result, image: capturedImage)
+                                previewProduct = product
+                                showingAIProductPreview = true
+
                                 // Add to scan history
                                 if let scannedList = productListManager.systemLists.first(where: { $0.name == .scanned }) {
                                     addToList(product, list: scannedList)
                                 }
                             } catch {
-                                aiResult = AIResult(message: error.localizedDescription)
+                                // TODO:  Handle error (e.g., show an alert)
                             }
                             aiLoading = false
                         }
@@ -188,15 +184,6 @@ struct ScanView: View {
         }
         .onChange(of: scannedCode) { newValue in
             if !newValue.isEmpty && scanMode == .barcode {
-                Task {
-                    do {
-                        let product = try await NetworkService.shared.fetchProduct(barcode: newValue)
-                        previewProduct = product
-                        showingProductPreview = true
-                    } catch {
-                        // Handle error (e.g., show an alert)
-                    }
-                }
                 isScanning = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     isScanning = true
@@ -205,7 +192,7 @@ struct ScanView: View {
             }
         }
         .onChange(of: detectedFood) { newValue in
-            if let food = newValue {
+            if let food = newValue, scanMode == .aiScan {
                 onScan?(food)
                 isScanning = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -222,28 +209,21 @@ struct ScanView: View {
                 dismiss()
             }
         }
-        .sheet(item: $aiResult) { result in
-            if let image = capturedImage {
-                AIMealPreviewCard(
-                    isPresented: .constant(true),
-                    analysisResult: result.message,
-                    capturedImage: image
-                )
-            }
-        }
-        .sheet(isPresented: $showingProductPreview) {
+        .sheet(isPresented: $showingAIProductPreview) {
             if let product = previewProduct {
-                BarcodePreviewCard(isPresented: $showingProductPreview, product: product)
+                AIMealPreviewCard(isPresented: .constant(true), product: product)
             }
         }
-        .toast()
+        .sheet(isPresented: $showingBarcodeProductPreview) {
+            if let product = previewProduct {
+                BarcodePreviewCard(isPresented: $showingBarcodeProductPreview, product: product)
+            }
+        }
         .aiGlowBorder(enabled: scanMode == .aiScan)
     }
 
     private func addToList(_ product: Product, list: ProductList) {
-        if productListManager.addToList(product, list: list) {
-            messageHandler.show("Added '\(product.productName)' to \(list.name.rawValue)")
-        }
+        _ = productListManager.addToList(product, list: list)
     }
 }
 

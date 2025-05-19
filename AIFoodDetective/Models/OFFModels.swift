@@ -136,7 +136,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
     var junkScore: Double {
         // First try to get the score from AI analysis
         if let aiAnalysis, let parsedAnalysis = AIAnalysis.parse(from: aiAnalysis) {
-            return parsedAnalysis.junkScore
+            return parsedAnalysis.healthMetrics.junkScore
         }
         
         // Fallback to calculated score
@@ -181,10 +181,6 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         )
     }
 
-    static var placeholderList: [Product] {
-        [Product.placeholder, Product.placeholder, Product.placeholder]
-    }
-
     static func createFromAIAnalysis(result: String, image: UIImage?) -> Product {
         // Create a unique ID for the AI-analyzed meal
         let uniqueId = "AI_\(UUID().uuidString)"
@@ -192,7 +188,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         // Convert image to data
         let imageData = image?.jpegData(compressionQuality: 0.8)
         
-        // Parse the AI response using MealAnalysis
+        // Parse the AI response using AIAnalysis
         guard let analysis = AIAnalysis.parse(from: result) else {
             // Fallback to basic product if parsing fails
             return Product(
@@ -225,7 +221,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
                 sources: nil,
                 labels: nil,
                 imageData: imageData,
-                aiAnalysis: nil
+                aiAnalysis: result
             )
         }
         
@@ -237,7 +233,10 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             sugars: analysis.nutritionalInfo.sugars,
             fiber: analysis.nutritionalInfo.fiber,
             starch: analysis.nutritionalInfo.starch,
-            seedOils: analysis.nutritionalInfo.seedOils
+            seedOils: analysis.nutritionalInfo.seedOils,
+            energyKcal: analysis.nutritionalInfo.energyKcal,
+            saturatedFat: analysis.nutritionalInfo.saturatedFat,
+            sodium: analysis.nutritionalInfo.sodium
         )
         
         // Convert ingredients to ProductIngredient objects
@@ -733,7 +732,10 @@ extension Nutriments {
         sugars: Double?,
         fiber: Double?,
         starch: Double?,
-        seedOils: Double?
+        seedOils: Double?,
+        energyKcal: Double?,
+        saturatedFat: Double?,
+        sodium: Double?
     ) -> Nutriments? {
         let dict: [String: Any?] = [
             "proteins_value": proteins,
@@ -749,7 +751,13 @@ extension Nutriments {
             "starch_value": starch,
             "starch_unit": "g",
             "seed_oils_value": seedOils,
-            "seed_oils_unit": "g"
+            "seed_oils_unit": "g",
+            "energy-kcal_value": energyKcal,
+            "energy-kcal_unit": "kcal",
+            "saturated-fat_value": saturatedFat,
+            "saturated-fat_unit": "g",
+            "sodium_value": sodium,
+            "sodium_unit": "g"
         ]
         let filtered = dict.compactMapValues { $0 }
         guard let data = try? JSONSerialization.data(withJSONObject: filtered, options: []) else { return nil }
@@ -1278,7 +1286,7 @@ struct AIAnalysis: Codable {
     let ingredients: [String]
     let nutritionalInfo: NutritionalInfo
     let portionSize: String
-    let junkScore: Double
+    let healthMetrics: HealthMetrics
     let additionalNotes: String
     
     struct NutritionalInfo: Codable {
@@ -1289,6 +1297,16 @@ struct AIAnalysis: Codable {
         let seedOils: Double
         let sugars: Double
         let fiber: Double
+        let energyKcal: Double
+        let saturatedFat: Double
+        let sodium: Double
+    }
+    
+    struct HealthMetrics: Codable {
+        let junkScore: Double
+        let addedSugars: Double
+        let refinedCarbs: Double
+        let processedIngredients: [String]
     }
 }
 
@@ -1300,7 +1318,7 @@ extension AIAnalysis {
         var ingredients: [String] = []
         var nutritionalInfo: NutritionalInfo?
         var portionSize = ""
-        var junkScore: Double?
+        var healthMetrics: HealthMetrics?
         var additionalNotes = ""
         
         for line in lines {
@@ -1318,22 +1336,24 @@ extension AIAnalysis {
             } else if trimmedLine.starts(with: "Portion Size:") {
                 portionSize = trimmedLine.replacingOccurrences(of: "Portion Size:", with: "").trimmingCharacters(in: .whitespaces)
                 currentSection = "portion"
-            } else if trimmedLine.starts(with: "Junk Score:") {
-                if let score = extractNumber(from: trimmedLine) {
-                    junkScore = score
-                }
-                currentSection = "junkScore"
+            } else if trimmedLine.starts(with: "Health Metrics:") {
+                currentSection = "health"
             } else if trimmedLine.starts(with: "Additional Notes:") {
                 currentSection = "notes"
             } else {
                 switch currentSection {
                 case "ingredients":
-                    if !trimmedLine.starts(with: "-") {
-                        ingredients.append(trimmedLine)
+                    if trimmedLine.starts(with: "-") {
+                        let ingredient = trimmedLine.dropFirst().trimmingCharacters(in: .whitespaces)
+                        ingredients.append(ingredient)
                     }
                 case "nutritional":
                     if nutritionalInfo == nil {
                         nutritionalInfo = parseNutritionalInfo(from: lines)
+                    }
+                case "health":
+                    if healthMetrics == nil {
+                        healthMetrics = parseHealthMetrics(from: lines)
                     }
                 case "notes":
                     additionalNotes += trimmedLine + "\n"
@@ -1344,7 +1364,7 @@ extension AIAnalysis {
         }
         
         guard let nutrition = nutritionalInfo,
-              let score = junkScore else {
+              let metrics = healthMetrics else {
             return nil
         }
         
@@ -1353,7 +1373,7 @@ extension AIAnalysis {
             ingredients: ingredients,
             nutritionalInfo: nutrition,
             portionSize: portionSize,
-            junkScore: score,
+            healthMetrics: metrics,
             additionalNotes: additionalNotes.trimmingCharacters(in: .whitespacesAndNewlines)
         )
     }
@@ -1366,6 +1386,9 @@ extension AIAnalysis {
         var seedOils: Double?
         var sugars: Double?
         var fiber: Double?
+        var energyKcal: Double?
+        var saturatedFat: Double?
+        var sodium: Double?
         
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
@@ -1383,6 +1406,12 @@ extension AIAnalysis {
                 sugars = extractNumber(from: trimmedLine)
             } else if trimmedLine.contains("Fiber:") {
                 fiber = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Energy (kcal):") {
+                energyKcal = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Saturated Fat:") {
+                saturatedFat = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Sodium:") {
+                sodium = extractNumber(from: trimmedLine)
             }
         }
         
@@ -1392,7 +1421,10 @@ extension AIAnalysis {
               let fats = fats,
               let seedOils = seedOils,
               let sugars = sugars,
-              let fiber = fiber else {
+              let fiber = fiber,
+              let energyKcal = energyKcal,
+              let saturatedFat = saturatedFat,
+              let sodium = sodium else {
             return nil
         }
         
@@ -1403,8 +1435,68 @@ extension AIAnalysis {
             fats: fats,
             seedOils: seedOils,
             sugars: sugars,
-            fiber: fiber
+            fiber: fiber,
+            energyKcal: energyKcal,
+            saturatedFat: saturatedFat,
+            sodium: sodium
         )
+    }
+    
+    private static func parseHealthMetrics(from lines: [String]) -> HealthMetrics? {
+        var junkScore: Double?
+        var addedSugars: Double?
+        var refinedCarbs: Double?
+        var processedIngredients: [String] = []
+        
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+            if trimmedLine.contains("Junk Score:") {
+                junkScore = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Added Sugars:") {
+                addedSugars = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Refined Carbs:") {
+                refinedCarbs = extractNumber(from: trimmedLine)
+            } else if trimmedLine.contains("Processed Ingredients:") {
+                processedIngredients = parseProcessedIngredients(from: lines)
+            }
+        }
+        
+        guard let junkScore = junkScore,
+              let addedSugars = addedSugars,
+              let refinedCarbs = refinedCarbs else {
+            return nil
+        }
+        
+        return HealthMetrics(
+            junkScore: junkScore,
+            addedSugars: addedSugars,
+            refinedCarbs: refinedCarbs,
+            processedIngredients: processedIngredients
+        )
+    }
+    
+    private static func parseProcessedIngredients(from lines: [String]) -> [String] {
+        var ingredients: [String] = []
+        var isProcessingIngredients = false
+        
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
+            if trimmedLine.contains("Processed Ingredients:") {
+                isProcessingIngredients = true
+                continue
+            }
+            
+            if isProcessingIngredients {
+                if trimmedLine.isEmpty || trimmedLine.contains("Additional Notes:") {
+                    break
+                }
+                if !trimmedLine.starts(with: "-") {
+                    ingredients.append(trimmedLine)
+                }
+            }
+        }
+        
+        return ingredients
     }
     
     private static func extractNumber(from string: String) -> Double? {

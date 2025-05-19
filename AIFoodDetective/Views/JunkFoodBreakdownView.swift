@@ -53,12 +53,12 @@ struct JunkFoodBreakdownView: View {
                                     Rectangle()
                                         .fill(item.color)
                                         .frame(
-                                            height: CGFloat(item.value / total) * 140,
+                                            height: CGFloat(item.value / total) * 160,
                                             alignment: .bottom
                                         )
                                 }
                             }
-                            .frame(width: 68, height: 140, alignment: .bottom)
+                            .frame(width: 100, height: 200, alignment: .bottom)
                             .clipShape(RoundedRectangle(cornerRadius: 18))
                         }
 
