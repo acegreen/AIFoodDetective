@@ -78,6 +78,8 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         return url
     }
     
+    var scanMode: ProductScanMode
+    
     enum CodingKeys: String, CodingKey {
         case _id
         case productName = "product_name"
@@ -111,6 +113,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         case uniqueScansN = "unique_scans_n"
         case sources
         case labels
+        case scanMode
     }
     
     // Computed properties
@@ -177,7 +180,8 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             sources: nil,
             labels: nil,
             imageData: nil,
-            aiAnalysis: nil
+            aiAnalysis: nil,
+            scanMode: .unknown
         )
     }
 
@@ -221,7 +225,8 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
                 sources: nil,
                 labels: nil,
                 imageData: imageData,
-                aiAnalysis: result
+                aiAnalysis: result,
+                scanMode: .aiScan
             )
         }
         
@@ -281,7 +286,8 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             sources: nil,
             labels: nil,
             imageData: imageData,
-            aiAnalysis: result
+            aiAnalysis: result,
+            scanMode: .aiScan
         )
     }
     
@@ -1124,11 +1130,11 @@ struct NutriscoreData: Codable {
 
 // MARK: - ProductPackaging
 struct ProductPackaging: Codable {
-    let shape: Shape
+    let shape: PackageShape
 }
 
 // MARK: - Shape
-struct Shape: Codable {
+struct PackageShape: Codable {
     let id: String
 }
 
@@ -1374,11 +1380,28 @@ extension AIAnalysis {
             nutritionalInfo: nutrition,
             portionSize: portionSize,
             healthMetrics: metrics,
-            additionalNotes: additionalNotes.trimmingCharacters(in: .whitespacesAndNewlines)
+            additionalNotes: additionalNotes
         )
     }
     
     private static func parseNutritionalInfo(from lines: [String]) -> NutritionalInfo? {
+        var inNutritionalSection = false
+        var nutritionLines: [String] = []
+        for line in lines {
+            if line.contains("Nutritional Information") {
+                inNutritionalSection = true
+                continue
+            }
+            if inNutritionalSection {
+                // Stop at the next section header
+                if line.contains("Health Metrics:") || line.contains("Portion Size:") || line.contains("Additional Notes:") {
+                    break
+                }
+                nutritionLines.append(line)
+            }
+        }
+
+        // Now parse only nutritionLines
         var carbs: Double?
         var starch: Double?
         var proteins: Double?
@@ -1389,57 +1412,60 @@ extension AIAnalysis {
         var energyKcal: Double?
         var saturatedFat: Double?
         var sodium: Double?
-        
-        for line in lines {
+
+        for line in nutritionLines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
-            if trimmedLine.contains("Carbohydrates:") {
-                carbs = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Starch:") {
-                starch = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Proteins:") {
-                proteins = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Fats:") {
-                fats = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Seed Oils:") {
-                seedOils = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Sugars:") {
-                sugars = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Fiber:") {
-                fiber = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Energy (kcal):") {
-                energyKcal = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Saturated Fat:") {
-                saturatedFat = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Sodium:") {
-                sodium = extractNumber(from: trimmedLine)
+            let contentLine = trimmedLine.hasPrefix("- ") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+
+            if contentLine.contains("Carbohydrates:") {
+                carbs = extractNumber(from: contentLine)
+            } else if contentLine.contains("Starch:") {
+                starch = extractNumber(from: contentLine)
+            } else if contentLine.contains("Proteins:") {
+                proteins = extractNumber(from: contentLine)
+            } else if contentLine.contains("Fats:") {
+                fats = extractNumber(from: contentLine)
+            } else if contentLine.contains("Seed Oils:") {
+                seedOils = extractNumber(from: contentLine)
+            } else if contentLine.contains("Sugars:") {
+                sugars = extractNumber(from: contentLine)
+            } else if contentLine.contains("Fiber:") {
+                fiber = extractNumber(from: contentLine)
+            } else if contentLine.contains("Energy (kcal):") {
+                energyKcal = extractNumber(from: contentLine)
+            } else if contentLine.contains("Saturated Fat:") {
+                saturatedFat = extractNumber(from: contentLine)
+            } else if contentLine.contains("Sodium:") {
+                sodium = extractNumber(from: contentLine)
             }
         }
-        
-        guard let carbs = carbs,
-              let starch = starch,
-              let proteins = proteins,
-              let fats = fats,
-              let seedOils = seedOils,
-              let sugars = sugars,
-              let fiber = fiber,
-              let energyKcal = energyKcal,
-              let saturatedFat = saturatedFat,
-              let sodium = sodium else {
+
+        // Return the struct if all values are present
+        if let carbs = carbs,
+           let starch = starch,
+           let proteins = proteins,
+           let fats = fats,
+           let seedOils = seedOils,
+           let sugars = sugars,
+           let fiber = fiber,
+           let energyKcal = energyKcal,
+           let saturatedFat = saturatedFat,
+           let sodium = sodium {
+            return NutritionalInfo(
+                carbohydrates: carbs,
+                starch: starch,
+                proteins: proteins,
+                fats: fats,
+                seedOils: seedOils,
+                sugars: sugars,
+                fiber: fiber,
+                energyKcal: energyKcal,
+                saturatedFat: saturatedFat,
+                sodium: sodium
+            )
+        } else {
             return nil
         }
-        
-        return NutritionalInfo(
-            carbohydrates: carbs,
-            starch: starch,
-            proteins: proteins,
-            fats: fats,
-            seedOils: seedOils,
-            sugars: sugars,
-            fiber: fiber,
-            energyKcal: energyKcal,
-            saturatedFat: saturatedFat,
-            sodium: sodium
-        )
     }
     
     private static func parseHealthMetrics(from lines: [String]) -> HealthMetrics? {
@@ -1450,13 +1476,15 @@ extension AIAnalysis {
         
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
-            if trimmedLine.contains("Junk Score:") {
-                junkScore = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Added Sugars:") {
-                addedSugars = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Refined Carbs:") {
-                refinedCarbs = extractNumber(from: trimmedLine)
-            } else if trimmedLine.contains("Processed Ingredients:") {
+            let contentLine = trimmedLine.hasPrefix("-") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+            
+            if contentLine.contains("Junk Score:") {
+                junkScore = extractNumber(from: contentLine)
+            } else if contentLine.contains("Added Sugars:") {
+                addedSugars = extractNumber(from: contentLine)
+            } else if contentLine.contains("Refined Carbs:") {
+                refinedCarbs = extractNumber(from: contentLine)
+            } else if contentLine.contains("Processed Ingredients:") {
                 processedIngredients = parseProcessedIngredients(from: lines)
             }
         }
@@ -1481,17 +1509,19 @@ extension AIAnalysis {
         
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
-            if trimmedLine.contains("Processed Ingredients:") {
+            let contentLine = trimmedLine.hasPrefix("-") ? String(trimmedLine.dropFirst(2)) : trimmedLine
+            
+            if contentLine.contains("Processed Ingredients:") {
                 isProcessingIngredients = true
                 continue
             }
             
             if isProcessingIngredients {
-                if trimmedLine.isEmpty || trimmedLine.contains("Additional Notes:") {
+                if contentLine.isEmpty || contentLine.contains("Additional Notes:") {
                     break
                 }
-                if !trimmedLine.starts(with: "-") {
-                    ingredients.append(trimmedLine)
+                if !contentLine.starts(with: "-") {
+                    ingredients.append(contentLine)
                 }
             }
         }
@@ -1508,4 +1538,10 @@ extension AIAnalysis {
         }
         return Double(string[range])
     }
+}
+
+enum ProductScanMode: String, Codable {
+    case aiScan
+    case barcode
+    case unknown
 }

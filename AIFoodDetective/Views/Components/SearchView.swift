@@ -104,7 +104,8 @@ struct SearchView: View {
 
         do {
             if query.count >= 8 && query.allSatisfy({ $0.isNumber }) {
-                let product = try await networkService.fetchProduct(barcode: query)
+                var product = try await networkService.fetchProduct(barcode: query)
+                product.scanMode = .barcode
                 onProductFound(product, searchMethod ?? .search)
             }
         } catch {

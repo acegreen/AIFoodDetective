@@ -52,7 +52,6 @@ struct BarcodePreviewCard: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.green)
                     .background(Color.white)
                     .foregroundColor(.green)
                     .cornerRadius(12)

@@ -37,34 +37,7 @@ struct ProductListView: View {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(sortedProducts) { product in
                         NavigationLink(destination: ProductDetailsView(product: product)) {
-                            CardView {
-                                VStack(spacing: 8) {
-                                    if let imageUrl = product.imageFrontUrl {
-                                        AsyncImage(url: URL(string: imageUrl)) { image in
-                                            image
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(height: 150)
-                                                .cornerRadius(8)
-                                        } placeholder: {
-                                            Rectangle()
-                                                .fill(Color.gray.opacity(0.2))
-                                                .frame(height: 150)
-                                                .cornerRadius(8)
-                                                .overlay(
-                                                    ProgressView()
-                                                )
-                                        }
-                                        .frame(maxWidth: .infinity)
-                                    }
-
-                                    Text(product.productName)
-                                        .font(.headline)
-                                        .foregroundColor(.systemBackground)
-                                        .multilineTextAlignment(.center)
-                                }
-                                .padding()
-                            }
+                            ProductCellView(product: product, compact: true)
                         }
                         .contextMenu {
                             Button {

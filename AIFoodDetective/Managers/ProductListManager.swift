@@ -10,11 +10,11 @@ class ProductListManager {
     var selectedList: ProductList?
     
     var customLists: [ProductList] {
-        Array(productLists.dropFirst(2))
+        Array(productLists.dropFirst(3))
     }
     
     var systemLists: [ProductList] {
-        Array(productLists.prefix(2))
+        Array(productLists.prefix(3))
     }
     
     private init() {

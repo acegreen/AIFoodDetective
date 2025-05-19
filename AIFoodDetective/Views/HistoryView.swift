@@ -114,7 +114,7 @@ struct HistoryView: View {
                 Button {
                     navigationPath.append(product)
                 } label: {
-                    ProductCellView(product: product, showDetails: false)
+                    ProductCellView(product: product, compact: true)
                 }
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)

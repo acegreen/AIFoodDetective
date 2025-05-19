@@ -25,10 +25,15 @@ struct AIAnalysisView: View {
 
                 if isExpanded {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(aiResult)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-
+                        if aiResult.isEmpty {
+                            Text("No AI analysis available")
+                                .foregroundColor(.secondary)
+                                .italic()
+                        } else {
+                            Text(aiResult)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
                     }
                     .transition(.move(edge: .top).combined(with: .opacity))
                 }

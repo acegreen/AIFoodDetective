@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ProfileView: View {
 //    @ObserveInjection var inject
+    @Environment(ProductListManager.self) var productListManager
 
     // MARK: - State
     @State private var selectedActivity: ActivityType = .viewed
@@ -48,7 +49,8 @@ struct ProfileView: View {
 
                     // Activity Stats
                     HStack(spacing: 32) {
-                        ProfileStatView(title: "SCANS", value: "3", icon: "plus.viewfinder", iconColor: .white)
+                        let scanned = productListManager.systemLists.first?.products.count ?? 0
+                        ProfileStatView(title: "SCANS", value: "\(scanned)", icon: "plus.viewfinder", iconColor: .white)
                         ProfileStatView(title: "LIKES", value: "0", icon: "hand.thumbsup.fill", iconColor: .white)
                         ProfileStatView(title: "COMMENTS", value: "0", icon: "text.bubble.fill", iconColor: .white)
                         ProfileStatView(title: "SHARES", value: "0", icon: "square.and.arrow.up.fill", iconColor: .white)

@@ -69,6 +69,11 @@ struct JunkFoodMeterView: View {
                     .foregroundColor(.secondary)
                     .shadow(radius: 2)
                     .offset(y: 40)
+
+                Text("Junk Score")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .offset(y: 60)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)

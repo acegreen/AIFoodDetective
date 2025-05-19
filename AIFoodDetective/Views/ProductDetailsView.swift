@@ -16,7 +16,7 @@ struct ProductDetailsView: View {
         ScrollView {
             LazyVStack(spacing: 20) {
                 // Product Info Section
-                ProductCellView(product: product, showDetails: true)
+                ProductCellView(product: product, compact: false)
 
                 // Junk Food Breakdown Section
                 JunkFoodBreakdownView(product: product)

@@ -5,7 +5,7 @@ struct ProductCellView: View {
     // @ObserveInjection var inject
 
     let product: Product
-    let showDetails: Bool
+    let compact: Bool
 
     var body: some View {
         CardView {
@@ -15,7 +15,7 @@ struct ProductCellView: View {
                         .font(.title2)
                         .fontWeight(.bold)
 
-                    if showDetails {
+                    if !compact {
                         Group {
                             LabeledContent("Barcode", value: product._id)
 
@@ -62,19 +62,19 @@ struct ProductCellView: View {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: 200)
+                            .frame(height: compact ? 100 : 200)
                             .cornerRadius(8)
                     } else if let imageUrl = product.imageFrontURL {
                         AsyncImage(url: imageUrl) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(height: 200)
+                                .frame(height: compact ? 100 : 200)
                                 .cornerRadius(8)
                         } placeholder: {
                             Rectangle()
                                 .fill(Color.gray.opacity(0.2))
-                                .frame(height: 200)
+                                .frame(height: compact ? 100 : 200)
                                 .cornerRadius(8)
                                 .overlay(
                                     ProgressView()

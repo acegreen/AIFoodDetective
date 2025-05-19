@@ -42,7 +42,8 @@ struct ScanView: View {
                     onScan: { code in
                         Task {
                             do {
-                                let product = try await NetworkService.shared.fetchProduct(barcode: code)
+                                var product = try await NetworkService.shared.fetchProduct(barcode: code)
+                                product.scanMode = .barcode
                                 previewProduct = product
                                 showingBarcodeProductPreview = true
                                 // Add to scan history
@@ -66,7 +67,8 @@ struct ScanView: View {
                         Task {
                             do {
                                 let result = try await AINetworkService.shared.analyzeMealImage(image)
-                                let product = Product.createFromAIAnalysis(result: result, image: capturedImage)
+                                var product = Product.createFromAIAnalysis(result: result, image: capturedImage)
+                                product.scanMode = .aiScan
                                 previewProduct = product
                                 showingAIProductPreview = true
 
