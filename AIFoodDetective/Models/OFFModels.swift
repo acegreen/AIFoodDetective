@@ -263,8 +263,8 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             nutriments: nutriments,
             ingredients: ingredients,
             ingredientsText: analysis.ingredients.joined(separator: ", "),
-            nutriscoreGrade: calculateNutriScore(nutriments: nutriments),
-            nutriscoreScore: calculateNutriScoreValue(nutriments: nutriments),
+            nutriscoreGrade: nil,
+            nutriscoreScore: nil,
             origins: nil,
             traces: nil,
             packaging: nil,
@@ -289,114 +289,6 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             aiAnalysis: result,
             scanMode: nil
         )
-    }
-    
-    // Helper function to calculate NutriScore grade
-    private static func calculateNutriScore(nutriments: Nutriments?) -> String {
-        let score = calculateNutriScoreValue(nutriments: nutriments)
-        switch score {
-        case ..<0: return "a"
-        case 0...2: return "b"
-        case 3...10: return "c"
-        case 11...18: return "d"
-        default: return "e"
-        }
-    }
-    
-    // Helper function to calculate NutriScore value
-    private static func calculateNutriScoreValue(nutriments: Nutriments?) -> Double {
-        var score = 0.0
-        
-        // Negative points
-        if let energy = nutriments?.energyKcal {
-            if energy > 335 { score += 10 }
-            else if energy > 301 { score += 9 }
-            else if energy > 268 { score += 8 }
-            else if energy > 234 { score += 7 }
-            else if energy > 201 { score += 6 }
-            else if energy > 167 { score += 5 }
-            else if energy > 134 { score += 4 }
-            else if energy > 100 { score += 3 }
-            else if energy > 67 { score += 2 }
-            else if energy > 33 { score += 1 }
-        }
-        
-        if let sugars = nutriments?.sugars {
-            if sugars > 13.5 { score += 10 }
-            else if sugars > 12 { score += 9 }
-            else if sugars > 10.5 { score += 8 }
-            else if sugars > 9 { score += 7 }
-            else if sugars > 7.5 { score += 6 }
-            else if sugars > 6 { score += 5 }
-            else if sugars > 4.5 { score += 4 }
-            else if sugars > 3 { score += 3 }
-            else if sugars > 1.5 { score += 2 }
-            else if sugars > 0 { score += 1 }
-        }
-        
-        if let satFat = nutriments?.saturatedFat {
-            if satFat > 10 { score += 10 }
-            else if satFat > 9 { score += 9 }
-            else if satFat > 8 { score += 8 }
-            else if satFat > 7 { score += 7 }
-            else if satFat > 6 { score += 6 }
-            else if satFat > 5 { score += 5 }
-            else if satFat > 4 { score += 4 }
-            else if satFat > 3 { score += 3 }
-            else if satFat > 2 { score += 2 }
-            else if satFat > 1 { score += 1 }
-        }
-        
-        if let sodium = nutriments?.sodium {
-            if sodium > 900 { score += 10 }
-            else if sodium > 810 { score += 9 }
-            else if sodium > 720 { score += 8 }
-            else if sodium > 630 { score += 7 }
-            else if sodium > 540 { score += 6 }
-            else if sodium > 450 { score += 5 }
-            else if sodium > 360 { score += 4 }
-            else if sodium > 270 { score += 3 }
-            else if sodium > 180 { score += 2 }
-            else if sodium > 90 { score += 1 }
-        }
-        
-        // Positive points
-        if let fiber = nutriments?.fiber {
-            if fiber > 4.7 { score -= 5 }
-            else if fiber > 3.7 { score -= 4 }
-            else if fiber > 2.8 { score -= 3 }
-            else if fiber > 1.9 { score -= 2 }
-            else if fiber > 0.9 { score -= 1 }
-        }
-        
-        if let protein = nutriments?.proteins {
-            if protein > 8.0 { score -= 5 }
-            else if protein > 6.4 { score -= 4 }
-            else if protein > 4.8 { score -= 3 }
-            else if protein > 3.2 { score -= 2 }
-            else if protein > 1.6 { score -= 1 }
-        }
-        
-        return score
-    }
-}
-
-extension Product {
-    /// Returns the NutriScore as an Int, or 0 if unavailable
-    var score: Int {
-        Int(nutriscoreScore ?? 0)
-    }
-
-    /// Returns a color based on the NutriScore grade (A=green, E=red, etc)
-    var scoreColor: Color {
-        switch nutriscoreGrade?.lowercased() {
-        case "a": return .green
-        case "b": return .yellow
-        case "c": return .orange
-        case "d": return .red
-        case "e": return .purple
-        default: return .gray
-        }
     }
 }
 
