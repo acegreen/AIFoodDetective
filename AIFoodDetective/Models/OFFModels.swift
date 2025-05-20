@@ -78,7 +78,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         return url
     }
     
-    var scanMode: ProductScanMode
+    var scanMode: ScanView.ScanMode?
     
     enum CodingKeys: String, CodingKey {
         case _id
@@ -181,7 +181,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             labels: nil,
             imageData: nil,
             aiAnalysis: nil,
-            scanMode: .unknown
+            scanMode: nil
         )
     }
 
@@ -226,7 +226,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
                 labels: nil,
                 imageData: imageData,
                 aiAnalysis: result,
-                scanMode: .aiScan
+                scanMode: nil
             )
         }
         
@@ -287,7 +287,7 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
             labels: nil,
             imageData: imageData,
             aiAnalysis: result,
-            scanMode: .aiScan
+            scanMode: nil
         )
     }
     
@@ -1538,10 +1538,4 @@ extension AIAnalysis {
         }
         return Double(string[range])
     }
-}
-
-enum ProductScanMode: String, Codable {
-    case aiScan
-    case barcode
-    case unknown
 }

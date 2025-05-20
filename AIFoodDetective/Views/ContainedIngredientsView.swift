@@ -33,8 +33,8 @@ struct ContainedIngredientsView: View {
                         
                         if ingredients.isEmpty {
                             Text("No ingredients information available")
+                                .font(.body)
                                 .foregroundColor(.secondary)
-                                .italic()
                         } else {
                             ForEach(ingredients.indices, id: \.self) { index in
                                 let ingredient = ingredients[index]

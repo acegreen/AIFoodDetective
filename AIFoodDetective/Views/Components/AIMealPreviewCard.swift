@@ -12,20 +12,28 @@ struct AIMealPreviewCard: View {
         VStack(spacing: 24) {
             // Product Image
             if let imageData = product.imageData,
-                let image = UIImage(data: imageData) {
+               let image = UIImage(data: imageData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
                     .frame(height: 120)
                     .cornerRadius(8)
-            } else {
-                Rectangle()
-                    .fill(Color(.systemGray5))
-                    .frame(height: 120)
-                    .cornerRadius(8)
-                    .overlay(
-                        ProgressView()
-                    )
+            } else if let imageUrl = product.imageFrontURL {
+                AsyncImage(url: imageUrl) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 120)
+                        .cornerRadius(8)
+                } placeholder: {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 120)
+                        .cornerRadius(8)
+                        .overlay(
+                            ProgressView()
+                        )
+                }
             }
 
             if let aiAnalysis = product.aiAnalysis {

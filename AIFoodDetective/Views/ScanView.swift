@@ -24,7 +24,7 @@ struct ScanView: View {
     @State private var capturedImage: UIImage? = nil
     var onScan: ((String) -> Void)? = nil
 
-    enum ScanMode: String, CaseIterable, Identifiable {
+    enum ScanMode: String, Codable, CaseIterable, Identifiable {
         case aiScan = "AI Scan"
         case barcode = "Barcode"
 

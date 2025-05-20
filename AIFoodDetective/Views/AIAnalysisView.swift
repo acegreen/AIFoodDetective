@@ -31,7 +31,7 @@ struct AIAnalysisView: View {
                                 .italic()
                         } else {
                             Text(aiResult)
-                                .font(.subheadline)
+                                .font(.body)
                                 .foregroundColor(.secondary)
                         }
                     }
