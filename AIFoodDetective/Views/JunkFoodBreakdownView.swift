@@ -42,13 +42,6 @@ struct JunkFoodBreakdownView: View {
         ]
     }
 
-    var total: Double {
-        let carbs = product.nutriments?.carbohydrates ?? 0
-        let protein = product.nutriments?.proteins ?? 0
-        let fats = product.nutriments?.fat ?? 0
-        return carbs + protein + fats
-    }
-
     var body: some View {
         CardView {
             VStack(alignment: .leading, spacing: 16) {
@@ -60,18 +53,19 @@ struct JunkFoodBreakdownView: View {
                     HStack(alignment: .center, spacing: 16) {
                         TaperedCupView(
                             layers: breakdown,
-                            total: total,
+                            total: product.nutriments?.total ?? 0,
                             cupWidth: 140,
                             cupHeight: 140
                         )
 
                         VStack(alignment: .leading, spacing: 16) {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Total Macros: \(String(format: "%.1f", total)) g")
-                                    .font(.headline)
+                                Text("Total Macros: \(String(format: "%.1f", product.nutriments?.total ?? 0)) g")
+                                    .font(.subheadline)
+                                    .bold()
                                     .foregroundColor(.primary)
                                 Text("(Carbs, Protein & Fats)")
-                                    .font(.subheadline)
+                                    .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             ForEach(breakdown, id: \.label) { item in
@@ -81,6 +75,7 @@ struct JunkFoodBreakdownView: View {
                                         .frame(width: 24, alignment: .center)
                                     Text("\(item.label):")
                                         .font(.subheadline)
+                                        .bold()
                                         .frame(width: 70, alignment: .leading)
                                     Text("\(String(format: "%.1f", item.value)) g")
                                         .font(.subheadline)
@@ -212,18 +207,18 @@ struct TaperedCupView: View {
                 inset: outlineWidth / 2,
                 cornerRadius: cupCornerRadius
             )
-            .stroke(Color.black.opacity(0.5), lineWidth: outlineWidth)
+            .stroke(Color.secondary, lineWidth: outlineWidth)
 
             // Lid
             Capsule()
-                .fill(Color.white.opacity(0.8))
+                .fill(Color.brown.opacity(0.8))
                 .frame(width: topWidth, height: lidHeight)
-                .offset(y: -cupHeight - 8)
+                .offset(y: -cupHeight - 4)
                 .overlay(
                     Capsule()
-                        .stroke(Color.black.opacity(0.5), lineWidth: outlineWidth)
+                        .stroke(Color.secondary, lineWidth: outlineWidth)
                         .frame(width: topWidth + outlineWidth, height: lidHeight)
-                        .offset(y: -cupHeight - 8)
+                        .offset(y: -cupHeight - 4)
                 )
         }
         .frame(width: topWidth + outlineWidth, height: cupHeight + 18)

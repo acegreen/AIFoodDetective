@@ -23,9 +23,13 @@ struct JunkFoodMeterView: View {
         String(format: "%.0f", round(product.junkScore))
     }
 
-    private func colorForScore(_ score: Double) -> Color {
+    private var normalizedScore: Double {
+        product.junkScore / 10
+    }
+
+    private func colorForScore() -> Color {
         for (index, range) in junkScoreRanges.enumerated() {
-            if range.contains(score) {
+            if range.contains(normalizedScore) {
                 return junkScoreColors[index]
             }
         }
@@ -51,7 +55,7 @@ struct JunkFoodMeterView: View {
 
                 // Needle
                 Rectangle()
-                    .fill(colorForScore(product.junkScore))
+                    .fill(colorForScore())
                     .frame(width: 4, height: 90)
                     .offset(y: -45)
                     .rotationEffect(.degrees(needleRotation))
@@ -66,7 +70,7 @@ struct JunkFoodMeterView: View {
                 // Level indicator
                 Text(scoreValue)
                     .font(.title3)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(colorForScore())
                     .shadow(radius: 2)
                     .offset(y: 40)
 

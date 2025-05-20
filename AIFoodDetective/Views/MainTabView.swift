@@ -25,9 +25,9 @@ struct MainTabView: View {
                 }
                 .tag(1)
 
-            SettingsView()
+            ProfileView()
                 .tabItem {
-                    Image(systemName: "gearshape.fill")
+                    Image(systemName: "person.fill")
                     Text("Me")
                 }
                 .tag(2)

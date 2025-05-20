@@ -27,8 +27,8 @@ struct AIAnalysisView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         if aiResult.isEmpty {
                             Text("No AI analysis available")
+                                .font(.body)
                                 .foregroundColor(.secondary)
-                                .italic()
                         } else {
                             Text(aiResult)
                                 .font(.body)

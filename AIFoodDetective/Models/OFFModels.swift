@@ -143,9 +143,11 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
         }
         
         // Fallback to calculated score
-        let sugar = nutriments?.sugars ?? 0
-        let starch = nutriments?.carbohydrates ?? 0
-        let score = min(1.0, (sugar + starch) / 100.0)
+        let sugars = nutriments?.sugars ?? 0
+        let seedOils = nutriments?.seedOils ?? 0
+        let starch = nutriments?.starch ?? 0
+        let total = nutriments?.total ?? 0
+        let score = max(0.0, min(10.0, (sugars + seedOils + starch) / total * 10))
         return score
     }
 
@@ -619,6 +621,13 @@ struct Nutriments: Codable {
 
     var energyKcal: Double? { energyKcal_value }
     var energyKj: Double? { energyKj_value }
+
+    var total: Double {
+        let carbs = carbohydrates ?? 0
+        let protein = proteins ?? 0
+        let fats = fat ?? 0
+        return carbs + protein + fats
+    }
 }
 
 // Factory for AI analysis
