@@ -5,36 +5,36 @@ struct BuyScansView: View {
     // @ObserveInjection var inject
 
     enum Package: Identifiable, CaseIterable {
+        case extra50
+        case extra100
         case extra200
-        case extra500
-        case extra1000
 
         var id: String { title }
         var title: String {
             switch self {
+            case .extra50: return "50 Extra Scans"
+            case .extra100: return "100 Extra Scans"
             case .extra200: return "200 Extra Scans"
-            case .extra500: return "500 Extra Scans"
-            case .extra1000: return "1000 Extra Scans"
             }
         }
         var subtitle: String {
             switch self {
+            case .extra50: return "No expiration"
+            case .extra100: return "No expiration"
             case .extra200: return "No expiration"
-            case .extra500: return "No expiration"
-            case .extra1000: return "No expiration"
             }
         }
         var price: String {
             switch self {
-            case .extra200: return "$1.95"
-            case .extra500: return "$4.95"
-            case .extra1000: return "$9.95"
+            case .extra50: return "$1.95"
+            case .extra100: return "$4.95"
+            case .extra200: return "$9.95"
             }
         }
     }
 
-    @State private var selectedPackage: Package = .extra200
-    @State private var remainingScans = 200
+    @State private var selectedPackage: Package = .extra50
+    @State private var remainingScans = 50
 
     var body: some View {
         NavigationStack {

@@ -11,7 +11,7 @@ import SwiftUI
 enum JunkBreakdownType: String, CaseIterable {
     case starch = "Starch"
     case seedOil = "Seed Oil"
-    case sugar = "Sugar\n(added)"
+    case sugar = "Added Sugar"
 
     var icon: String {
         switch self {

@@ -297,6 +297,21 @@ struct Product: Codable, Identifiable, Hashable, Equatable {
 
 // MARK: - ProductIngredient
 struct ProductIngredient: Codable {
+    struct SuspiciousIngredient: Codable, Hashable, Equatable {
+        let name: String
+
+        static var `default`: [SuspiciousIngredient] = [
+            .init(name: "Sunflower Oil"),
+            .init(name: "Soybean Oil"),
+            .init(name: "Corn Syrup"),
+            .init(name: "Dextrose"),
+            .init(name: "Fructose"),
+            .init(name: "Modified Corn Starch"),
+            .init(name: "Enriched Flour"),
+            // Add more as needed...
+        ]
+    }
+
     let id: String?
     let text: String
     let vegan: String?
@@ -312,7 +327,9 @@ struct ProductIngredient: Codable {
     }
 
     var isSuspicious: Bool {
-        vegan != "yes" || vegetarian != "yes"
+        SuspiciousIngredient.default.contains {
+            $0.name.caseInsensitiveCompare(text.trimmingCharacters(in: .whitespacesAndNewlines)) == .orderedSame
+        }
     }
 }
 
