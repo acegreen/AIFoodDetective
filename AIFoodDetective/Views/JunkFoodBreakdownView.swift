@@ -11,7 +11,7 @@ import SwiftUI
 enum JunkBreakdownType: String, CaseIterable {
     case starch = "Starch"
     case seedOil = "Seed Oil"
-    case sugar = "Sugar"
+    case sugar = "Sugar\n(added)"
 
     var icon: String {
         switch self {
@@ -38,7 +38,7 @@ struct JunkFoodBreakdownView: View {
         [
             .init(type: .starch, color: JunkBreakdownType.starch.defaultColor, value: product.nutriments?.starch ?? 0),
             .init(type: .seedOil, color: JunkBreakdownType.seedOil.defaultColor, value: product.nutriments?.seedOils ?? 0),
-            .init(type: .sugar, color: JunkBreakdownType.sugar.defaultColor, value: product.nutriments?.sugars ?? 0)
+            .init(type: .sugar, color: JunkBreakdownType.sugar.defaultColor, value: product.nutriments?.addedSugars ?? 0)
         ]
     }
 
@@ -69,7 +69,7 @@ struct JunkFoodBreakdownView: View {
                                     .foregroundColor(.secondary)
                             }
                             ForEach(breakdown, id: \.label) { item in
-                                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                HStack(alignment: .center, spacing: 8) {
                                     Image(systemName: item.icon)
                                         .foregroundColor(item.color)
                                         .frame(width: 24, alignment: .center)
