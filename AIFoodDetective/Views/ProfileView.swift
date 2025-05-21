@@ -123,7 +123,7 @@ struct ProfileView: View {
                 }
                 .padding()
             }
-            .background(Color.systemBackground)
+            .greenBackground()
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
             .whiteNavigationTitle()

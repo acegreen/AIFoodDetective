@@ -28,7 +28,10 @@ struct AddToListView: View {
                     }
                 }
             }
+            .greenBackground()
             .navigationTitle("Add to List")
+            .whiteNavigationTitle()
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(leading: Button("Cancel") {
                 isPresented = false
             })

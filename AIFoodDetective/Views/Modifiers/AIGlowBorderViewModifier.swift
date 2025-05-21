@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AIGlowBorder: ViewModifier {
+struct AIGlowBorderViewModifier: ViewModifier {
     @State private var animate = false
 
     func body(content: Content) -> some View {
@@ -33,7 +33,7 @@ extension View {
     @ViewBuilder
     func aiGlowBorder(enabled: Bool) -> some View {
         if enabled {
-            self.modifier(AIGlowBorder())
+            self.modifier(AIGlowBorderViewModifier())
         } else {
             self
         }

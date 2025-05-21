@@ -19,6 +19,7 @@ struct CreateListView: View {
             }
             .greenBackground()
             .navigationTitle(isEditing ? "Edit List" : "Create New List")
+            .whiteNavigationTitle()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

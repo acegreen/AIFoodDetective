@@ -59,7 +59,7 @@ struct ProductListView: View {
                 .padding()
             }
         }
-        .background(Color.systemBackground)
+        .greenBackground()
         .navigationTitle(list.name.rawValue)
         .whiteNavigationTitle()
         .navigationBarItems(trailing: sortButton)

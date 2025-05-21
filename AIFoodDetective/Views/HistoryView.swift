@@ -58,7 +58,7 @@ struct HistoryView: View {
                 listSection
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.systemBackground)
+            .greenBackground()
             .navigationTitle("History")
             .whiteNavigationTitle()
             .sheet(isPresented: $showingEditAlert) {

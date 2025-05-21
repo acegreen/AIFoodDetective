@@ -28,7 +28,7 @@ struct ProductDetailsView: View {
             }
             .padding()
         }
-        .background(Color.systemBackground)
+        .greenBackground()
         .navigationTitle("Food Details")
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationTitle()

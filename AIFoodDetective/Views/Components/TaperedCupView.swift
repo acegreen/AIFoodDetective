@@ -70,6 +70,37 @@ struct TaperedCupView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ZStack(alignment: .bottom) {
+                // Water background when no layers
+                if layerFrames.isEmpty {
+                    TaperedLayerShape(
+                        topWidth: topWidth,
+                        bottomWidth: bottomWidth,
+                        startY: cupHeight * 0.5, // Start at middle
+                        endY: cupHeight,
+                        totalHeight: cupHeight,
+                        inset: 0,
+                        cornerRadius: cupCornerRadius
+                    )
+                    .fill(Color.blue.opacity(0.2))
+                    .overlay(
+                        // Water ripples
+                        ForEach(0..<3, id: \.self) { _ in
+                            Path { path in
+                                let y = CGFloat.random(in: (cupHeight * 0.6)...(cupHeight * 0.9))
+                                let startX = CGFloat.random(in: (topWidth * 0.2)...(topWidth * 0.7))
+                                let endX = startX + CGFloat.random(in: 20...40)
+                                let controlY = y + CGFloat.random(in: -2...2)
+                                path.move(to: CGPoint(x: startX, y: y))
+                                path.addQuadCurve(
+                                    to: CGPoint(x: endX, y: y),
+                                    control: CGPoint(x: (startX + endX) / 2, y: controlY)
+                                )
+                            }
+                            .stroke(Color.blue.opacity(0.3), lineWidth: 1.5)
+                        }
+                    )
+                }
+
                 // Cup Body Layers
                 ForEach(layerFrames.indices, id: \.self) { idx in
                     let (layer, startY, height) = layerFrames[idx]
@@ -229,7 +260,7 @@ struct LayerOverlay: View {
                         )
                 }
             case .starch:
-                // Horizontal fiber strands
+                // Horizontal fiber strands - using the same pattern as ripples
                 ForEach(0..<max(2, Int(width / 30)), id: \.self) { _ in
                     Path { path in
                         let y = CGFloat.random(in: (height * 0.2)...(height * 0.8))
