@@ -22,6 +22,10 @@ struct ScanView: View {
     @State private var showManualEntry = false
     @State private var previewProduct: Product? = nil
     @State private var capturedImage: UIImage? = nil
+    @State private var showUserInputSheet = false
+    @State private var userInput = ""
+    @State private var isAnalyzing = false
+    @State private var userInputContinuation: CheckedContinuation<String, Never>?
     var onScan: ((String) -> Void)? = nil
 
     enum ScanMode: String, Codable, CaseIterable, Identifiable {
@@ -63,11 +67,15 @@ struct ScanView: View {
                     detectedFood: $detectedFood,
                     onPhotoCaptured: { image in
                         capturedImage = image
-                        aiLoading = true
+                        showUserInputSheet = true
                         Task {
                             do {
-                                let result = try await AINetworkService.shared.analyzeMealImage(image)
-                                var product = Product.createFromAIAnalysis(result: result, image: capturedImage)
+                                isAnalyzing = true
+                                let input = await withCheckedContinuation { continuation in
+                                    userInputContinuation = continuation
+                                }
+                                let result = try await AINetworkService.shared.analyzeMealImage(image, userInput: input)
+                                var product = Product.createFromAIAnalysis(result: result, image: image)
                                 product.scanMode = .aiScan
                                 previewProduct = product
                                 showingAIProductPreview = true
@@ -77,9 +85,9 @@ struct ScanView: View {
                                     addToList(product, list: scannedList)
                                 }
                             } catch {
-                                // TODO:  Handle error (e.g., show an alert)
+                                // TODO: Handle error (e.g., show an alert)
                             }
-                            aiLoading = false
+                            isAnalyzing = false
                         }
                     },
                     triggerPhotoCapture: $triggerPhotoCapture,
@@ -146,7 +154,7 @@ struct ScanView: View {
                 .padding(.bottom, 48)
             }
 
-            if aiLoading {
+            if isAnalyzing {
                 // Full-screen blur overlay
                 Rectangle()
                     .fill(.ultraThinMaterial) // or .regularMaterial for more blur
@@ -220,6 +228,17 @@ struct ScanView: View {
             if let product = previewProduct {
                 BarcodePreviewCard(isPresented: $showingBarcodeProductPreview, product: product)
             }
+        }
+        .sheet(isPresented: $showUserInputSheet) {
+            AIUserInputView(
+                isPresented: $showUserInputSheet,
+                userInput: $userInput,
+                onConfirm: { input in
+                    userInput = input
+                    showUserInputSheet = false
+                    userInputContinuation?.resume(returning: input)
+                }
+            )
         }
         .aiGlowBorder(enabled: scanMode == .aiScan)
     }
