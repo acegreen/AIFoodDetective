@@ -19,33 +19,6 @@ struct ProfileView: View {
                         }
                     }
 
-                    // Food Preferences Card
-                    NavigationLink(destination: Text("Food Preferences")) {
-                        CardView {
-                            HStack(spacing: 16) {
-                                Image(systemName: "fork.knife")
-                                    .font(.title2)
-                                    .foregroundColor(.primary)
-                                    .frame(width: 24)
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Food Preferences")
-                                        .font(.headline)
-                                        .foregroundColor(.secondary)
-                                    Text("Choose what information about food matters most to you.")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                        .multilineTextAlignment(.leading)
-                                }
-
-                                Spacer()
-
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-
                     // Buy Scans Card
                     NavigationLink(destination: BuyScansView()) {
                         CardView {
@@ -67,36 +40,8 @@ struct ProfileView: View {
                         }
                     }
 
-                    // Donate Card
-                    Button(action: {
-                        // Handle donate action
-                    }) {
-                        CardView{
-                            HStack(spacing: 16) {
-                                Image(systemName: "heart.fill")
-                                    .font(.title2)
-                                    .foregroundColor(.primary)
-                                    .frame(width: 24)
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Donate")
-                                        .font(.headline)
-                                        .foregroundColor(.secondary)
-                                    Text("Donate to AIFoodDetective")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-
-                                Spacer()
-
-                                Image(systemName: "arrow.up.forward.square")
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-
                     // App Settings Card
-                    NavigationLink(destination: Text("App Settings")) {
+                    NavigationLink(destination: SettingsView()) {
                         CardView {
                             HStack(spacing: 16) {
                                 Image(systemName: "gearshape.fill")
@@ -108,9 +53,10 @@ struct ProfileView: View {
                                     Text("App Settings")
                                         .font(.headline)
                                         .foregroundColor(.secondary)
-                                    Text("Reminders, Notifications...")
+                                    Text("Food preferences, reminders, notifications...")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.leading)
                                 }
 
                                 Spacer()
@@ -120,6 +66,34 @@ struct ProfileView: View {
                             }
                         }
                     }
+
+                    // // Donate Card
+                    // Button(action: {
+                    //     // Handle donate action
+                    // }) {
+                    //     CardView{
+                    //         HStack(spacing: 16) {
+                    //             Image(systemName: "heart.fill")
+                    //                 .font(.title2)
+                    //                 .foregroundColor(.primary)
+                    //                 .frame(width: 24)
+
+                    //             VStack(alignment: .leading, spacing: 4) {
+                    //                 Text("Donate")
+                    //                     .font(.headline)
+                    //                     .foregroundColor(.secondary)
+                    //                 Text("Donate to AIFoodDetective")
+                    //                     .font(.subheadline)
+                    //                     .foregroundColor(.secondary)
+                    //             }
+
+                    //             Spacer()
+
+                    //             Image(systemName: "arrow.up.forward.square")
+                    //                 .foregroundColor(.secondary)
+                    //         }
+                    //     }
+                    // }
                 }
                 .padding()
             }

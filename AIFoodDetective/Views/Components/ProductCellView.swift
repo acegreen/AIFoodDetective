@@ -85,7 +85,7 @@ struct ProductCellView: View {
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()
-                        .background(Color.green)
+                        .background(Color.systemBackground)
                         .cornerRadius(8)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)

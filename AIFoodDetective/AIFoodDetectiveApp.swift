@@ -17,8 +17,9 @@ struct AIFoodDetectiveApp: App {
     
     init() {
         let appearance = UITabBarAppearance()
-        appearance.backgroundColor = UIColor(Color.systemBackground)
+        appearance.backgroundColor = UIColor(.systemBackground)
         UITabBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().tintColor = UIColor(.systemBackground)
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }

@@ -38,61 +38,62 @@ struct BuyScansView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                // Header
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Remaining Scans")
-                            .font(.headline)
-                            .foregroundColor(.white.opacity(0.8))
-                        Text("\(remainingScans)")
-                            .font(.largeTitle.bold())
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.white.opacity(0.2))
-                .cornerRadius(10)
-
-                // Packages List
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Purchase options")
-                        .font(.title3)
-                        .foregroundColor(.white.opacity(0.8))
-
-                    ForEach(Package.allCases) { pkg in
-                        Button(action: {
-                            selectedPackage = pkg
-                        }) {
-                            HStack {
-                                Image(systemName: selectedPackage == pkg ? "largecircle.fill.circle" : "circle")
-                                    .foregroundColor(selectedPackage == pkg ? .white : .secondary)
-                                    .font(.title2)
-                                VStack(alignment: .leading) {
-                                    Text(pkg.title)
-                                        .font(.body)
-                                        .foregroundColor(.white)
-                                    Text(pkg.subtitle)
-                                        .font(.caption)
-                                        .foregroundColor(.white.opacity(0.7))
-                                }
-                                Spacer()
-                                Text(pkg.price)
-                                    .font(.body.bold())
-                                    .foregroundColor(.white)
+            VStack(alignment: .center, spacing: 0) {
+                List {
+                    // Header Section
+                    Section {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Remaining Scans")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("\(remainingScans)")
+                                    .font(.largeTitle.bold())
+                                    .foregroundColor(.primary)
                             }
-                            .padding()
-                            .background(Color.white.opacity(0.2))
-                            .cornerRadius(10)
+                            Spacer()
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                    }
+
+                    // Packages Section
+                    Section(header: Text("Purchase options")) {
+                        ForEach(Package.allCases) { pkg in
+                            Button(action: {
+                                selectedPackage = pkg
+                            }) {
+                                HStack(spacing: 16) {
+                                    Image(systemName: selectedPackage == pkg ? "largecircle.fill.circle" : "circle")
+                                        .foregroundColor(selectedPackage == pkg ? .primary : .secondary)
+                                        .font(.title2)
+                                    VStack(alignment: .leading) {
+                                        Text(pkg.title)
+                                            .font(.body)
+                                            .foregroundColor(.primary)
+                                        Text(pkg.subtitle)
+                                            .font(.caption)
+                                            .foregroundColor(.primary)
+                                    }
+                                    Spacer()
+                                    Text(pkg.price)
+                                        .font(.body.bold())
+                                        .foregroundColor(.primary)
+                                }
+                                .padding()
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
                     }
                 }
+                .listStyle(.insetGrouped)
+                .greenBackground()
+                .navigationTitle("Buy Scans")
+                .navigationBarTitleDisplayMode(.inline)
+                .whiteNavigationTitle()
 
-                Spacer()
 
+                // Buy Button
                 Button(action: {
                     // Handle purchase
                 }) {
@@ -100,18 +101,14 @@ struct BuyScansView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.white.opacity(0.2))
                         .foregroundColor(.white)
+                        .background(Color.systemBackground)
                         .cornerRadius(12)
                 }
+                .padding(24)
                 .disabled(true)
-
-                Spacer()
             }
-            .padding()
-            .frame(maxHeight: .infinity)
-            .greenBackground()
+            // .enableInjection()
         }
-        // .enableInjection()
     }
 }
