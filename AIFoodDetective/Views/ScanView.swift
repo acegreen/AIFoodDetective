@@ -229,7 +229,11 @@ struct ScanView: View {
                 BarcodePreviewCard(isPresented: $showingBarcodeProductPreview, product: product)
             }
         }
-        .sheet(isPresented: $showUserInputSheet) {
+        .sheet(isPresented: $showUserInputSheet, onDismiss: {
+            // If the sheet is dismissed without confirmation, resume with empty string
+            userInputContinuation?.resume(returning: "")
+            isAnalyzing = false
+        }) {
             AIUserInputView(
                 isPresented: $showUserInputSheet,
                 userInput: $userInput,

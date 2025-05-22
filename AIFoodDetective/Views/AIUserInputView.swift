@@ -12,27 +12,32 @@ struct AIUserInputView: View {
                 Text("Additional Information")
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .foregroundColor(.white)
                 
                 Text("Please provide any additional details about your meal that might not be visible in the image.")
-                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
+                    .foregroundColor(.white)
                 
                 TextField("e.g., coffee with milk, tea with sugar", text: $userInput)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal)
-                
-                Button("Confirm") {
+                    .foregroundColor(.secondary)
+                Button("Analyze") {
                     onConfirm(userInput)
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.green)
+                .font(.headline)
+                .padding(12)
+                .tint(.white)
+                .foregroundStyle(.green)
+                .cornerRadius(12)
             }
-            .padding()
-            .navigationBarItems(trailing: Button("Cancel") {
-                isPresented = false
-            })
+            .padding(.horizontal)
+        }
+        .onAppear {
+            userInput = ""
         }
         .presentationBackground(Color.systemBackground)
         .presentationDetents([.medium])

@@ -6,7 +6,19 @@ import UIKit
 struct AIMealPreviewCard: View {
     @Binding var isPresented: Bool
     @State private var showingListPicker = false
+    @State private var currentDetent: PresentationDetent = .medium
     let product: Product
+
+    var imageHeight: CGFloat {
+        switch currentDetent {
+        case .medium:
+            return 100
+        case .large:
+            return 200
+        default:
+            return 120
+        }
+    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -16,19 +28,19 @@ struct AIMealPreviewCard: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 120)
+                    .frame(height: imageHeight)
                     .cornerRadius(8)
             } else if let imageUrl = product.imageFrontURL {
                 AsyncImage(url: imageUrl) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(height: 120)
+                        .frame(height: imageHeight)
                         .cornerRadius(8)
                 } placeholder: {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                        .frame(height: 120)
+                        .frame(height: imageHeight)
                         .cornerRadius(8)
                         .overlay(
                             ProgressView()
@@ -72,7 +84,7 @@ struct AIMealPreviewCard: View {
         .sheet(isPresented: $showingListPicker) {
             AddToListView(isPresented: $showingListPicker, product: product)
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.medium, .large], selection: $currentDetent)
     }
 }
 

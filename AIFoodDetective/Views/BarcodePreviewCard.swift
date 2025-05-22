@@ -39,10 +39,12 @@ struct BarcodePreviewCard: View {
                 Text(product.productName)
                     .font(.title)
                     .fontWeight(.medium)
+                    .foregroundColor(.white)
                 
                 Text(product._id)
                     .font(.body)
                     .foregroundColor(.secondary)
+                    .foregroundColor(.white)
             }
             .padding(.bottom, 12)
             
