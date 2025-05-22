@@ -232,51 +232,92 @@ struct LayerOverlay: View {
     let height: CGFloat
     let color: Color
 
+    // Store random positions for overlays
+    let fiberPaths: [Path]
+    let sugarCubes: [(CGRect, CGPoint)]
+    let oilBubbles: [(CGRect, CGPoint)]
+
+    init(type: JunkBreakdownType, width: CGFloat, height: CGFloat, color: Color) {
+        self.type = type
+        self.width = width
+        self.height = height
+        self.color = color
+
+        // Starch fibers
+        if type == .starch {
+            self.fiberPaths = (0..<max(2, Int(width / 30))).map { _ in
+                var path = Path()
+                let y = CGFloat.random(in: (height * 0.2)...(height * 0.8))
+                let startX = CGFloat.random(in: (width * 0.1)...(width * 0.7))
+                let endX = startX + CGFloat.random(in: 0.2*width...0.5*width)
+                let controlY = y + CGFloat.random(in: -0.05*height...0.05*height)
+                path.move(to: CGPoint(x: startX, y: y))
+                path.addQuadCurve(
+                    to: CGPoint(x: endX, y: y),
+                    control: CGPoint(x: (startX + endX) / 2, y: controlY)
+                )
+                return path
+            }
+        } else {
+            self.fiberPaths = []
+        }
+
+        // Sugar cubes
+        if type == .sugar {
+            self.sugarCubes = (0..<max(2, Int(height / 18))).map { _ in
+                let size = CGFloat.random(in: 0.15*height...0.35*height)
+                let frame = CGRect(x: 0, y: 0, width: size, height: size)
+                let position = CGPoint(
+                    x: CGFloat.random(in: (width * 0.15)...(width * 0.85)),
+                    y: CGFloat.random(in: (height * 0.15)...(height * 0.85))
+                )
+                return (frame, position)
+            }
+        } else {
+            self.sugarCubes = []
+        }
+
+        // Seed oil bubbles
+        if type == .seedOil {
+            self.oilBubbles = (0..<max(3, Int(height / 10))).map { _ in
+                let size = CGFloat.random(in: 0.1*height...0.3*height)
+                let frame = CGRect(x: 0, y: 0, width: size, height: size)
+                let position = CGPoint(
+                    x: CGFloat.random(in: (width * 0.1)...(width * 0.9)),
+                    y: CGFloat.random(in: (height * 0.1)...(height * 0.9))
+                )
+                return (frame, position)
+            }
+        } else {
+            self.oilBubbles = []
+        }
+    }
+
     var body: some View {
-        ZStack {
-            switch type {
-            case .sugar:
-                // Sugar cubes
-                ForEach(0..<max(2, Int(height / 18)), id: \.self) { _ in
-                    Image(systemName: "cube.fill")
-                        .resizable()
-                        .aspectRatio(1, contentMode: .fit)
-                        .frame(width: CGFloat.random(in: 10...16), height: CGFloat.random(in: 10...16))
-                        .foregroundColor(color.opacity(0.25))
-                        .position(
-                            x: CGFloat.random(in: (width * 0.15)...(width * 0.85)),
-                            y: CGFloat.random(in: (height * 0.15)...(height * 0.85))
-                        )
-                }
-            case .seedOil:
-                // Bubbles
-                ForEach(0..<max(3, Int(height / 10)), id: \.self) { _ in
-                    Circle()
-                        .fill(color.opacity(0.35))
-                        .frame(width: CGFloat.random(in: 8...18), height: CGFloat.random(in: 8...18))
-                        .position(
-                            x: CGFloat.random(in: (width * 0.1)...(width * 0.9)),
-                            y: CGFloat.random(in: (height * 0.1)...(height * 0.9))
-                        )
-                }
-            case .starch:
-                // Horizontal fiber strands - using the same pattern as ripples
-                ForEach(0..<max(2, Int(width / 30)), id: \.self) { _ in
-                    Path { path in
-                        let y = CGFloat.random(in: (height * 0.2)...(height * 0.8))
-                        let startX = CGFloat.random(in: (width * 0.1)...(width * 0.7))
-                        let endX = startX + CGFloat.random(in: 18...32)
-                        let controlY = y + CGFloat.random(in: -3...3)
-                        path.move(to: CGPoint(x: startX, y: y))
-                        path.addQuadCurve(
-                            to: CGPoint(x: endX, y: y),
-                            control: CGPoint(x: (startX + endX) / 2, y: controlY)
-                        )
-                    }
+        switch type {
+        case .sugar:
+            ForEach(0..<sugarCubes.count, id: \.self) { idx in
+                let (frame, position) = sugarCubes[idx]
+                Image(systemName: "cube.fill")
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(width: frame.width, height: frame.height)
+                    .foregroundColor(color.opacity(0.25))
+                    .position(position)
+            }
+        case .seedOil:
+            ForEach(0..<oilBubbles.count, id: \.self) { idx in
+                let (frame, position) = oilBubbles[idx]
+                Circle()
+                    .fill(color.opacity(0.35))
+                    .frame(width: frame.width, height: frame.height)
+                    .position(position)
+            }
+        case .starch:
+            ForEach(0..<fiberPaths.count, id: \.self) { idx in
+                fiberPaths[idx]
                     .stroke(color.opacity(0.25), lineWidth: 2)
-                }
             }
         }
-        .clipped()
     }
 }

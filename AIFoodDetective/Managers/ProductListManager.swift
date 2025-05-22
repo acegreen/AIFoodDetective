@@ -8,13 +8,13 @@ class ProductListManager {
     var productLists: [ProductList] = []
     var selectedProduct: Product?
     var selectedList: ProductList?
-    
-    var customLists: [ProductList] {
-        Array(productLists.dropFirst(3))
+
+    var systemLists: [ProductList] {
+        Array(productLists.prefix(1))
     }
     
-    var systemLists: [ProductList] {
-        Array(productLists.prefix(3))
+    var customLists: [ProductList] {
+        Array(productLists.dropFirst(1))
     }
     
     private init() {
@@ -26,8 +26,7 @@ class ProductListManager {
               let decodedLists = try? JSONDecoder().decode([ProductList].self, from: data) else {
             // Return default lists if nothing is saved
             let defaultLists = [
-                ProductList(name: .scanned),
-                ProductList(name: .viewed)
+                ProductList(name: .scanned)
             ]
             // Save default lists immediately
             if let encoded = try? JSONEncoder().encode(defaultLists) {
@@ -76,13 +75,16 @@ class ProductListManager {
     }
     
     func moveList(from source: IndexSet, to destination: Int) {
-        let lists = Array(productLists)
+        // Create mutable copies of the arrays
+        var lists = productLists
         let systemLists = Array(lists.prefix(2))
-        var customLists = Array(lists.dropFirst(2))
+        var mutableCustomLists = Array(lists.dropFirst(2))
         
-        customLists.move(fromOffsets: source, toOffset: destination)
-        productLists = systemLists + customLists
+        // Move items in the custom lists section
+        mutableCustomLists.move(fromOffsets: source, toOffset: destination)
         
+        // Recombine the arrays
+        productLists = systemLists + mutableCustomLists
         saveProductLists()
     }
     
@@ -104,22 +106,25 @@ class ProductListManager {
     }
     
     // Sorting method
-    func sortedProducts(from list: ProductList, by option: ProductListView.SortOption) -> [Product] {
+    func sortedProducts(from list: ProductList, by option: HistoryView.SortOption, direction: HistoryView.SortDirection) -> [Product] {
+        let products: [Product]
+        
         switch option {
-        case .newest:
-            return list.products.sorted {
+        case .date:
+            products = list.products.sorted {
                 guard let date1 = $0.createdDate, let date2 = $1.createdDate else { return false }
-                return date1 > date2
-            }
-        case .oldest:
-            return list.products.sorted {
-                guard let date1 = $0.createdDate, let date2 = $1.createdDate else { return false }
-                return date1 < date2
+                return direction == .ascending ? date1 < date2 : date1 > date2
             }
         case .name:
-            return list.products.sorted { $0.productName < $1.productName }
+            products = list.products.sorted { 
+                direction == .ascending ? $0.productName < $1.productName : $0.productName > $1.productName 
+            }
         case .barcode:
-            return list.products.sorted { $0._id < $1._id }
+            products = list.products.filter { $0.scanMode == .barcode }
+        case .aiScan:
+            products = list.products.filter { $0.scanMode == .aiScan }
         }
+        
+        return products
     }
 } 

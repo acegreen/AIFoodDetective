@@ -10,13 +10,16 @@ struct ProductListView: View {
     @State private var showingAlert = false
     @State private var showingListPicker = false
     @State private var selectedProduct: Product?  // Unified state variable
-    @State private var sortOption: ProductListView.SortOption = .newest  // Default sort option
+    @State private var sortOption: HistoryView.SortOption = .date  // Default sort option
+    @State private var sortDirection: HistoryView.SortDirection = .descending  // Default sort direction
 
-    enum SortOption: String, CaseIterable {
-        case newest = "Newest"
-        case oldest = "Oldest"
-        case name = "Name"
-        case barcode = "Barcode"
+    var scannedList: ProductList? {
+        productListManager.systemLists.first
+    }
+
+    var filteredProducts: [Product] {
+        guard let list = scannedList else { return [] }
+        return productListManager.sortedProducts(from: list, by: sortOption, direction: sortDirection)
     }
 
     private let columns = [
@@ -26,16 +29,14 @@ struct ProductListView: View {
 
     var body: some View {
         ScrollView {
-            let sortedProducts = productListManager.sortedProducts(from: list, by: sortOption)
-
-            if sortedProducts.isEmpty {
+            if filteredProducts.isEmpty {
                 Text("No products yet")
                     .foregroundColor(.systemBackground)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding()
             } else {
                 LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(sortedProducts) { product in
+                    ForEach(filteredProducts) { product in
                         NavigationLink(destination: ProductDetailsView(product: product)) {
                             ProductCellView(product: product, compact: true)
                         }
@@ -62,7 +63,7 @@ struct ProductListView: View {
         .greenBackground()
         .navigationTitle(list.name.rawValue)
         .whiteNavigationTitle()
-        .navigationBarItems(trailing: sortButton)
+//        .navigationBarItems(trailing: sortButton)
         .alert("Delete Product", isPresented: $showingAlert, presenting: selectedProduct) { product in
             Button("Delete", role: .destructive) {
                 if let index = list.products.firstIndex(where: { $0.id == product.id }) {
@@ -99,26 +100,26 @@ struct ProductListView: View {
         }
     }
 
-    private var sortButton: some View {
-        Menu {
-            Button(action: {
-                sortOption = sortOption == .newest ? .oldest : .newest
-            }) {
-                Label("Order: \(sortOption == .newest ? "Newest" : "Oldest")", systemImage: sortOption == .newest ? "arrow.up" : "arrow.down")
-            }
-            ForEach(SortOption.allCases.filter { $0 != .newest && $0 != .oldest }, id: \.self) { option in
-                Button(action: {
-                    sortOption = option
-                }) {
-                    Text(option.rawValue)
-                }
-            }
-        } label: {
-            Label("Order", systemImage: "arrow.up.arrow.down")
-                .font(.headline)
-                .foregroundColor(.white)
-        }
-    }
+//    private var sortButton: some View {
+//        Menu {
+//            Button(action: {
+//                sortOption = sortOption == .newest ? .oldest : .newest
+//            }) {
+//                Label("Order: \(sortOption == .newest ? "Newest" : "Oldest")", systemImage: sortOption == .newest ? "arrow.up" : "arrow.down")
+//            }
+//            ForEach(SortOption.allCases.filter { $0 != .newest && $0 != .oldest }, id: \.self) { option in
+//                Button(action: {
+//                    sortOption = option
+//                }) {
+//                    Text(option.rawValue)
+//                }
+//            }
+//        } label: {
+//            Label("Order", systemImage: "arrow.up.arrow.down")
+//                .font(.headline)
+//                .foregroundColor(.white)
+//        }
+//    }
 }
 
 #Preview {

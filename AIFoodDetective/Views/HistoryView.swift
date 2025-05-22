@@ -12,51 +12,35 @@ struct HistoryView: View {
     @State private var showingListPicker = false
     @State private var showingDeleteAlert = false
     @State private var showingEditAlert = false
-    @State private var selectedTab: Tab = .scanned
     @State private var products: [Product] = []
     @State private var navigationPath = NavigationPath()
+    @State private var sortOption: SortOption = .date  // Default sort option
+    @State private var sortDirection: SortDirection = .descending  // Default sort direction
 
-    enum Tab: String, CaseIterable, Identifiable {
-        case scanned = "Scanned"
-        case viewed = "Viewed"
-        case submitted = "Submitted"
+    enum SortDirection {
+        case ascending
+        case descending
+    }
 
-        var id: String { rawValue }
+    enum SortOption: String, CaseIterable {
+        case date = "Date"
+        case name = "Name"
+        case barcode = "Barcode"
+        case aiScan = "AI Scan"
+    }
 
-        var toProductListName: ProductListName {
-            switch self {
-            case .scanned: return .scanned
-            case .viewed: return .viewed
-            case .submitted: return .submitted
-            }
-        }
+    var scannedList: ProductList? {
+        productListManager.systemLists.first
     }
 
     var filteredProducts: [Product] {
-        switch selectedTab {
-        case .scanned:
-            return productListManager.systemLists.first(where: { $0.name == .scanned })?.products ?? []
-        case .viewed:
-            return productListManager.systemLists.first(where: { $0.name == .viewed })?.products ?? []
-        case .submitted:
-            return productListManager.systemLists.first(where: { $0.name == .submitted })?.products ?? []
-        }
+        guard let list = scannedList else { return [] }
+        return productListManager.sortedProducts(from: list, by: sortOption, direction: sortDirection)
     }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            VStack(spacing: 0) {
-                Picker("History", selection: $selectedTab) {
-                    ForEach(Tab.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-                .padding(.top, 8)
-
-                listSection
-            }
+            listSection
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .greenBackground()
             .navigationTitle("History")
@@ -88,10 +72,11 @@ struct HistoryView: View {
             .navigationDestination(for: Product.self) { product in
                 ProductDetailsView(product: product)
             }
+            .navigationBarItems(trailing: sortButton)
             .alert("Delete Product", isPresented: $showingDeleteAlert) {
                 if let product = productListManager.selectedProduct {
                     Button("Delete", role: .destructive) {
-                        if let list = productListManager.systemLists.first(where: { $0.name == selectedTab.toProductListName }) {
+                        if let list = productListManager.systemLists.first(where: { $0.name == .scanned }) {
                             _ = productListManager.removeFromList(product, list: list)
                         }
                         productListManager.selectedProduct = nil
@@ -141,6 +126,28 @@ struct HistoryView: View {
         }
         .listStyle(PlainListStyle())
         .scrollContentBackground(.hidden)
+    }
+
+    private var sortButton: some View {
+        Menu {
+            Button(action: {
+                sortDirection = sortDirection == .ascending ? .descending : .ascending
+            }) {
+                Label("Order: \(sortDirection == .ascending ? "Ascending" : "Descending")", 
+                      systemImage: sortDirection == .ascending ? "arrow.up" : "arrow.down")
+            }
+            ForEach(SortOption.allCases, id: \.self) { option in
+                Button(action: {
+                    sortOption = option
+                }) {
+                    Text(option.rawValue)
+                }
+            }
+        } label: {
+            Label("Order", systemImage: "arrow.up.arrow.down")
+                .font(.headline)
+                .foregroundColor(.white)
+        }
     }
 }
 
