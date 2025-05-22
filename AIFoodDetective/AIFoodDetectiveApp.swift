@@ -11,9 +11,10 @@ import UIKit
 
 @main
 struct AIFoodDetectiveApp: App {
+    @State private var networkService = NetworkService.shared
+    @State private var authService = AuthenticationService.shared
     @State private var productListManager = ProductListManager.shared
     @State private var messageHandler = MessageHandler.shared
-    @State private var networkService = NetworkService.shared
     
     init() {
         let appearance = UITabBarAppearance()
@@ -28,9 +29,10 @@ struct AIFoodDetectiveApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
-                .environment(messageHandler)
-                .environment(productListManager)
                 .environment(networkService)
+                .environment(authService)
+                .environment(productListManager)
+                .environment(messageHandler)
                 .preferredColorScheme(.light)
                 .tint(.white)
         }

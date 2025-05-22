@@ -4,6 +4,7 @@ import SwiftUI
 struct ProfileSignedInView: View {
     //    @ObserveInjection var inject
     @Environment(ProductListManager.self) var productListManager
+    @Environment(AuthenticationService.self) private var authService
 
     // MARK: - State
     @State private var selectedActivity: ActivityType = .viewed
@@ -28,14 +29,14 @@ struct ProfileSignedInView: View {
             HStack {
                 ProfileAvatarView()
                 VStack(alignment: .leading) {
-                    Text("Ace Thinker")
+                    Text(authService.userName ?? "User")
                         .font(.title2.bold())
                         .foregroundColor(.primary)
-                    Button("Edit profile") {
-                        // Edit action
+                    Button("Sign Out") {
+                        authService.signOut()
                     }
                     .font(.subheadline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.red)
                 }
             }
 
@@ -49,7 +50,14 @@ struct ProfileSignedInView: View {
             }
             .padding(.horizontal)
         }
+//        .enableInjection()
     }
+}
+
+#Preview {
+    ProfileSignedInView()
+        .environment(ProductListManager.shared)
+        .environment(AuthenticationService.shared)
 }
 
 // MARK: - Subviews

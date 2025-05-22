@@ -4,7 +4,10 @@ import Foundation
 
 struct SignInView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AuthenticationService.self) private var authService
     @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var showError = false
     
     var body: some View {
         NavigationView {
@@ -15,10 +18,10 @@ struct SignInView: View {
                         .font(.system(size: 100))
                         .foregroundColor(.green)
                     
-                    Text("Welcome to JunkFoodMeter")
+                    Text("Welcome to AIFoodDetective")
                         .font(.title2).bold()
                         .foregroundColor(.primary)
-                         .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.center)
                     
                     Text("Sign in to contribute and access your personal data")
                         .font(.subheadline)
@@ -39,9 +42,32 @@ struct SignInView: View {
                         case .success(let authorization):
                             if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
                                 handleAppleSignIn(appleIDCredential)
+                            } else {
+                                showError(message: "Failed to get Apple ID credentials")
                             }
                         case .failure(let error):
-                            print("Apple sign in failed: \(error.localizedDescription)")
+                            let authError = error as? ASAuthorizationError
+                            let errorCode = authError?.code.rawValue ?? -1
+                            print("Apple sign in failed with error code: \(errorCode)")
+                            print("Error description: \(error.localizedDescription)")
+                            
+                            switch authError?.code {
+                            case .canceled:
+                                // User canceled the sign-in, no need to show error
+                                break
+                            case .invalidResponse:
+                                showError(message: "Invalid response from Apple")
+                            case .notHandled:
+                                showError(message: "Sign in request not handled")
+                            case .failed:
+                                showError(message: "Sign in failed")
+                            case .notInteractive:
+                                showError(message: "Sign in request not interactive")
+                            case .unknown:
+                                showError(message: "An unknown error occurred")
+                            default:
+                                showError(message: error.localizedDescription)
+                            }
                         }
                     }
                     .signInWithAppleButtonStyle(.black)
@@ -93,6 +119,11 @@ struct SignInView: View {
                         .background(Color.black.opacity(0.2))
                 }
             }
+            .alert("Sign In Error", isPresented: $showError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage ?? "An unknown error occurred")
+            }
         }
     }
     
@@ -100,10 +131,10 @@ struct SignInView: View {
         isLoading = true
         
         // Handle successful Apple sign in
-        // You would typically send this to your backend
-        print("Successfully signed in with Apple: \(result.user)")
+        authService.handleSignInWithApple(result)
         
         isLoading = false
+        dismiss()
     }
     
     private func handleGoogleSignIn() {
@@ -112,8 +143,15 @@ struct SignInView: View {
         // You would typically use GoogleSignIn SDK here
         isLoading = false
     }
+    
+    private func showError(message: String) {
+        errorMessage = message
+        showError = true
+        isLoading = false
+    }
 }
 
 #Preview {
     SignInView()
+        .environment(AuthenticationService.shared)
 } 

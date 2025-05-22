@@ -2,8 +2,8 @@ import SwiftUI
 //import Inject
 
 struct ProfileView: View {
-    //    @ObserveInjection var inject
-    @State private var isSignedIn = true
+    // @ObserveInjection var inject
+    @Environment(AuthenticationService.self) private var authService
     @State private var showingSignIn = false
 
     var body: some View {
@@ -12,7 +12,7 @@ struct ProfileView: View {
                 VStack(spacing: 16) {
                     // Welcome Card
                     CardView {
-                        if !isSignedIn {
+                        if !authService.isSignedIn {
                             ProfileWelcomeView(showingSignIn: $showingSignIn)
                         } else {
                             ProfileSignedInView()
@@ -105,10 +105,11 @@ struct ProfileView: View {
                 SignInView()
             }
         }
-        //        .enableInjection()
+        // .enableInjection()
     }
 }
 
 #Preview {
     ProfileView()
+        .environment(AuthenticationService.shared)
 }

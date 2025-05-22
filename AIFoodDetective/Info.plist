@@ -10,5 +10,14 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.greenace.AIFoodDetective</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
